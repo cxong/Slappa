@@ -4,10 +4,10 @@ from sprite import *
 from util import *
 
 GRAVITY = 0.00198
-SPEED = 0.03
+SPEED = 0.1
 MAX_SPEED = 0.2
 JUMP_FORCE = 0.7
-FRICTION = 0.05
+FRICTION = 0.03
 
 
 class Player(Sprite):
@@ -60,11 +60,11 @@ class Player(Sprite):
         if not self.is_on_ground():
             return
         self.is_jumping = True
-        self.dy -= JUMP_FORCE
+        self.dy = -JUMP_FORCE
         # TODO: switch to jump sprite
 
     def is_on_ground(self):
-        return self.y <= FLOOR_Y
+        return self.y >= FLOOR_Y
 
     def draw(self, surface):
         # TODO: boxes

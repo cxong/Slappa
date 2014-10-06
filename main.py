@@ -59,7 +59,7 @@ things = load_sprites_from_folder("things")
 font = pygame.font.SysFont("Comic Sans", 32)
 
 # Game state
-FRAME_TIME = 17
+FRAME_RATE = 60
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
 enemies = []
@@ -73,7 +73,7 @@ def addEnemy(x, y):
 
 # Game loop
 clock.tick()
-pygame.mixer.music.play()
+pygame.mixer.music.play(-1)
 while True:
     is_quit = False
     # Events
@@ -118,7 +118,7 @@ while True:
 
     #Loop
     pygame.display.flip()
-    clock.tick_busy_loop(FRAME_TIME)
+    clock.tick(FRAME_RATE)
 
 pygame.mixer.quit()
 pygame.quit()
