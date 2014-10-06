@@ -15,7 +15,7 @@ class Player(Sprite):
         rect = pygame.Rect(0, 0, dimensions[0], dimensions[1])
         image = pygame.Surface(rect.size).convert()
         image.blit(pygame.image.load(image_path).convert(), (0, 0), rect)
-        super(Player, self).__init__(image, dimensions)
+        super(Player, self).__init__(image)
 
         self.is_jumping = True
         self.is_hitting = False

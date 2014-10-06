@@ -1,12 +1,12 @@
-import pygame
+from point import *
 
 
 class Sprite(object):
-    def __init__(self, image, dimensions):
+    def __init__(self, image):
         self.image = image
 
-        self.width = dimensions[0]
-        self.height = dimensions[1]
+        self.width = image.get_width()
+        self.height = image.get_height()
 
         self.dx = 0
         self.dy = 0
@@ -15,7 +15,7 @@ class Sprite(object):
 
         self.health = 0
 
-        self.anchor = pygame.math.Vector2(0.5, 0.5)
+        self.anchor = Point(0.5, 0.5)
 
     def update(self, time):
         self.x += self.dx * time
@@ -23,5 +23,5 @@ class Sprite(object):
 
     def draw(self, surface):
        surface.blit(self.image,
-                    self.x - self.width * self.anchor.x,
-                    self.y - self.height * self.anchor.y)
+                    (self.x - self.width * self.anchor.x,
+                    self.y - self.height * self.anchor.y))

@@ -16,6 +16,7 @@ from sprite import *
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 pygame.display.set_caption("Slappa!")
+screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 # Input devices
@@ -33,10 +34,11 @@ def load_from_path(path, load):
 
 
 # Sounds
+pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
 def load_sounds_from_folder(folder):
     def load_sound(path):
         return pygame.mixer.Sound(path)
-    return load_from_path("sounds/" + folder)
+    return load_from_path("sounds/" + folder, load_sound)
 soundHits = load_sounds_from_folder("hits")
 soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
@@ -49,7 +51,7 @@ player = Player("images/players/cat.png", (64, 64))
 def load_sprites_from_folder(folder):
     def load_sprite(path):
         return Sprite(pygame.image.load(path))
-    return load_from_path("images/" + folder)
+    return load_from_path("images/" + folder, load_sprite)
 things = load_sprites_from_folder("things")
 #imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
@@ -58,10 +60,9 @@ font = pygame.font.SysFont("Comic Sans", 32)
 
 # Game state
 FRAME_TIME = 17
-screen = pygame.display.set_mode(SCREEN_SIZE)
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
-#enemies = []
+enemies = []
 '''
 def addEnemy(x, y):
     s = copy.copy(samurai)
@@ -72,6 +73,7 @@ def addEnemy(x, y):
 
 # Game loop
 clock.tick()
+pygame.mixer.music.play()
 while True:
     is_quit = False
     # Events
@@ -81,7 +83,7 @@ while True:
 
     # Keys
     keys.update()
-    if keys.isescape():
+    if keys.is_escape():
         is_quit = True
 
     if is_quit:
@@ -90,7 +92,7 @@ while True:
     #Update
     player.hit(keys.hit())
     player.move(keys.dir())
-    if keys.isjump():
+    if keys.is_jump():
         player.jump()
     player.update(clock.get_time())
 
