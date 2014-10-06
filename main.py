@@ -9,8 +9,8 @@ from config import *
 #from enemy import *
 #from gravity_engine import *
 from keyboard import *
-#from player import *
-#from thing import *
+from player import *
+from sprite import *
 #from vec import *
 
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
@@ -21,47 +21,37 @@ clock = pygame.time.Clock()
 # Input devices
 keys = Keyboard()
 
+
+def load_from_path(path, load):
+    assets = []
+    for dir_name, dir_names, file_names in os.walk(path):
+        for file_name in file_names:
+            if file_name.endswith(".txt"):
+                continue
+            assets.append(load(os.path.join(dir_name, file_name)))
+    return assets
+
+
 # Sounds
-soundHits = []
-for dir_name, dir_names, file_names in os.walk("sounds/hits"):
-    for file_name in file_names:
-        if file_name.endswith(".txt"):
-            continue
-        soundHits.append(pygame.mixer.Sound(os.path.join(dir_name, file_name)))
-soundSwings = []
-for dir_name, dir_names, file_names in os.walk("sounds/swings"):
-    for file_name in file_names:
-        if file_name.endswith(".txt"):
-            continue
-        soundSwings.append(pygame.mixer.Sound(os.path.join(dir_name, file_name)))
+def load_sounds_from_folder(folder):
+    def load_sound(path):
+        return pygame.mixer.Sound(path)
+    return load_from_path("sounds/" + folder)
+soundHits = load_sounds_from_folder("hits")
+soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
 soundJump = pygame.mixer.Sound("sounds/jump.ogg")
-soundDie = pygame.mixer.Sound("sounds/die.wav")
+soundDeaths = load_sounds_from_folder("deaths")
 
 # Images
-imageBackground = pygame.image.load("images/background.jpg")
-imageSlappers = [
-    (pygame.image.load("slapper0.gif"), 0, 0, 0),
-    (pygame.image.load("slapper1.gif"), 0, 0, 0)]
-imageSlapperJumps = [
-    (pygame.image.load("slapper_j.gif"), 0, 0, 0)]
-imageSlapperHits = [
-    (pygame.image.load("slapper_h0.gif"), -20, 0, 0),
-    (pygame.image.load("slapper_h1.gif"), -20, 0, 0),
-    (pygame.image.load("slapper_h1.gif"), -20, 0, 0)]
-imageSlapperHitUps = [
-    (pygame.image.load("slapper_hu0.gif"), 0, 0, 23),
-    (pygame.image.load("slapper_hu1.gif"), -10, -10, -23),
-    (pygame.image.load("slapper_hu1.gif"), -10, -10, -23)]
-imageSlapperHitDowns = [
-    (pygame.image.load("slapper_hd0.gif"), -30, 0, 13),
-    (pygame.image.load("slapper_hd1.gif"), -10, -10, 10),
-    (pygame.image.load("slapper_hd1.gif"), -10, -10, 10)]
-things = []
-for dir_name, dir_names, file_names in os.walk("images/things"):
-    for file_name in file_names:
-        things.append(pygame.image.load(os.path.join(dir_name, file_name)))
-imageSamurai = pygame.image.load("images/enemies/samurai.gif")
+imageBackground = pygame.image.load("images/bg.png")
+player = Player("images/players/cat.png", (64, 64))
+def load_sprites_from_folder(folder):
+    def load_sprite(path):
+        return Sprite(pygame.image.load(path))
+    return load_from_path("images/" + folder)
+things = load_sprites_from_folder("things")
+#imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
 # Other
 font = pygame.font.SysFont("Comic Sans", 32)
@@ -70,32 +60,32 @@ font = pygame.font.SysFont("Comic Sans", 32)
 FRAME_TIME = 17
 screen = pygame.display.set_mode(SCREEN_SIZE)
 screenBuf = pygame.Surface(SCREEN_SIZE)
-player = Player(playerAssets)
-gravityEngine = GravityEngine()
-gravityEngine.items.append(player)
-enemies = []
-samurai = Enemy(1500, player, enemySamuraiAssets,
-    Thing(thingImagesAndSounds[3][0], thingImagesAndSounds[3][1]),
-    thingGenerator)
+score = 0
+#enemies = []
+'''
 def addEnemy(x, y):
     s = copy.copy(samurai)
     s.x = x
     s.y = y
     enemies.append(s)
+'''
 
 # Game loop
 clock.tick()
 while True:
-    isQuit = False
+    is_quit = False
     # Events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            isQuit = True
+            is_quit = True
 
     # Keys
     keys.update()
     if keys.isescape():
-        isQuit = True
+        is_quit = True
+
+    if is_quit:
+        break
 
     #Update
     player.hit(keys.hit())
@@ -106,31 +96,18 @@ while True:
 
     # remove dead enemies
     enemies = [enemy for enemy in enemies if enemy.health > 0]
-    # add enemies
-    if len(enemies) < 4:
-        while True:
-            x = random.randrange(0, imageBackground.get_width())
-            if x < camera.x or x > camera.x + camera.width:
-                break
-        addEnemy(x, 350)
+    # TODO: add enemies
     for enemy in enemies:
-        if camera.contains(enemy):
-            enemy.update(clock.get_time())
-    thingGenerator.update(clock.get_time())
-    thingGenerator.detectCollisions(
-        player.getHitArea(), player.x, player.y - 35)
-    thingGenerator.detectPlayerCollisions(player.getArea(), player)
-    thingGenerator.detectEnemyCollisions(enemies)
+        enemy.update(clock.get_time())
 
     #Render
     screenBuf.fill((255, 255, 255))
     screenBuf.blit(imageBackground, (0, 0))
-    player.draw(screenBuf, camera)
+    player.draw(screenBuf)
     for enemy in enemies:
-        enemy.draw(screenBuf, camera)
-    thingGenerator.draw(screenBuf, camera)
+        enemy.draw(screenBuf)
     screenBuf.blit(font.render("HP: " + str(player.health), False, (255, 0, 0)), (50, 50))
-    screenBuf.blit(font.render("Score: " + str(player.score), False, (0, 255, 0)), (500, 50))
+    screenBuf.blit(font.render("Score: " + str(score), False, (0, 255, 0)), (500, 50))
     screenBuf.blit(font.render("WAD: punch", False, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
     screenBuf.blit(font.render("Arrows: move", False, (0, 0, 0)), (SCREEN_SIZE[0] - 200, SCREEN_SIZE[1] - 50))
     if player.health <= 0:
