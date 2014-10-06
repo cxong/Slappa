@@ -23,16 +23,19 @@ keys = Keyboard()
 
 # Sounds
 soundHits = []
-for dirname, dirnames, filenames in os.walk("sounds/hits"):
-    for filename in filenames:
-        soundHits.append(pygame.mixer.Sound(os.path.join(dirname, filename)))
+for dir_name, dir_names, file_names in os.walk("sounds/hits"):
+    for file_name in file_names:
+        if file_name.endswith(".txt"):
+            continue
+        soundHits.append(pygame.mixer.Sound(os.path.join(dir_name, file_name)))
 soundSwings = []
-for dirname, dirnames, filenames in os.walk("sounds/swings"):
-    for filename in filenames:
-        soundSwings.append(pygame.mixer.Sound(os.path.join(dirname, filename)))
-soundPain = pygame.mixer.Sound("pain.wav")
-soundJump = pygame.mixer.Sound("sounds/jump.wav")
-soundGrunt = pygame.mixer.Sound("sounds/grunt.wav")
+for dir_name, dir_names, file_names in os.walk("sounds/swings"):
+    for file_name in file_names:
+        if file_name.endswith(".txt"):
+            continue
+        soundSwings.append(pygame.mixer.Sound(os.path.join(dir_name, file_name)))
+soundPain = pygame.mixer.Sound("sounds/meow.ogg")
+soundJump = pygame.mixer.Sound("sounds/jump.ogg")
 soundDie = pygame.mixer.Sound("sounds/die.wav")
 
 # Images
@@ -55,9 +58,9 @@ imageSlapperHitDowns = [
     (pygame.image.load("slapper_hd1.gif"), -10, -10, 10),
     (pygame.image.load("slapper_hd1.gif"), -10, -10, 10)]
 things = []
-for dirname, dirnames, filenames in os.walk("images/things"):
-    for filename in filenames:
-        things.append(pygame.image.load(os.path.join(dirname, filename)))
+for dir_name, dir_names, file_names in os.walk("images/things"):
+    for file_name in file_names:
+        things.append(pygame.image.load(os.path.join(dir_name, file_name)))
 imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
 # Other
