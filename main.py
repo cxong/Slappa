@@ -42,7 +42,6 @@ def load_sounds_from_folder(folder):
 soundHits = load_sounds_from_folder("hits")
 soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
-soundJump = pygame.mixer.Sound("sounds/jump.ogg")
 soundDeaths = load_sounds_from_folder("deaths")
 
 # Images

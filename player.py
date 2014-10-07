@@ -20,12 +20,17 @@ class Player(Sprite):
         self.y = FLOOR_Y
         self.anchor.y = 0.34
 
-        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 1, True)
+        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.play('idle')
 
         self.is_jumping = True
         self.is_hitting = False
         self.is_facing_right = True
+
+        self.sounds = {
+            'jump': pygame.mixer.Sound("sounds/jump.ogg"),
+            'land': pygame.mixer.Sound("sounds/land.ogg")
+        }
 
     def update(self, time):
         self.dy += GRAVITY * time
@@ -47,6 +52,7 @@ class Player(Sprite):
     def land(self):
         self.y = FLOOR_Y
         if self.is_jumping:
+            self.sounds['land'].play()
             self.dx = 0
             self.dy = 0
             self.is_jumping = False
@@ -75,6 +81,7 @@ class Player(Sprite):
             return
         self.is_jumping = True
         self.dy = -JUMP_FORCE
+        self.sounds['jump'].play()
         # TODO: switch to jump sprite
 
     def is_on_ground(self):

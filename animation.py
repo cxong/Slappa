@@ -5,13 +5,24 @@ class Animation(object):
         self.frames = frames
         self.duration = duration
         self.loop = loop
+        self.is_playing = False
 
         self.counter = -1
+        self.sub_counter = 0
 
     def update(self):
-        self.counter += 1
+        if not self.is_playing:
+            return
+        self.sub_counter += 1
+        if self.sub_counter == self.duration:
+            self.sub_counter = 0
+            self.counter += 1
         if self.counter == len(self.frames):
-            self.counter = 0
+            if self.loop:
+                self.counter = 0
+            else:
+                self.counter = len(self.frames) - 1
+                self.is_playing = False
 
     def get_crop(self, dimensions, image_width):
         frame = self.frames[self.counter]
@@ -22,6 +33,7 @@ class Animation(object):
             y += dimensions[1]
         return pygame.Rect(x, y, dimensions[0], dimensions[1])
 
+
 class AnimationManager(object):
     def __init__(self):
         self.animations = {}
@@ -29,6 +41,7 @@ class AnimationManager(object):
 
     def play(self, name):
         self.animation_playing = self.animations[name]
+        self.animation_playing.is_playing = True
 
     def update(self):
         if self.animation_playing is not None:
