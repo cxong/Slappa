@@ -21,6 +21,7 @@ class Player(Sprite):
         self.anchor.y = 0.34
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
+        self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
         self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
         self.animations.play('idle')
 
@@ -41,8 +42,10 @@ class Player(Sprite):
         # Friction, only on ground
         if self.is_on_ground():
             if self.dx > 0:
+                self.animations.play('walk')
                 self.dx = max(0, self.dx - FRICTION * time)
             elif self.dx < 0:
+                self.animations.play('walk')
                 self.dx = min(0, self.dx + FRICTION * time)
             else:
                 self.animations.play('idle')
