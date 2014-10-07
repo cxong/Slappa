@@ -1,4 +1,5 @@
 import pygame
+from animation import *
 from point import *
 
 
@@ -22,6 +23,8 @@ class Sprite(object):
             self.image,
             (image.get_width() * scale.x, image.get_height() * scale.y))
 
+        self.animations = AnimationManager()
+
         self.dx = 0
         self.dy = 0
         self.x = 0
@@ -37,12 +40,14 @@ class Sprite(object):
     def update(self, time):
         self.x += self.dx * time
         self.y += self.dy * time
+        self.animations.update()
 
     def draw(self, surface):
         cropped = pygame.Surface(self.crop.size)
         cropped.fill((255, 0, 255, 0))
         cropped.set_colorkey((255, 0, 255, 0))
-        cropped.blit(self.image, (0, 0), self.crop)
+        crop = self.animations.get_crop(self.crop.size, self.image.get_width())
+        cropped.blit(self.image, (0, 0), crop)
         cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
         surface.blit(cropped,
                      (self.x - self.width * self.anchor.x,

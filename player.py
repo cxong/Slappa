@@ -20,6 +20,9 @@ class Player(Sprite):
         self.y = FLOOR_Y
         self.anchor.y = 0.34
 
+        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 1, True)
+        self.animations.play('idle')
+
         self.is_jumping = True
         self.is_hitting = False
         self.is_facing_right = True
