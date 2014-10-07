@@ -4,34 +4,44 @@ from sprite import *
 from util import *
 
 GRAVITY = 0.00198
-SPEED = 0.1
+SPEED = 0.3
 MAX_SPEED = 0.2
 JUMP_FORCE = 0.7
-FRICTION = 0.03
+FRICTION = 0.002
 
 
 class Player(Sprite):
     def __init__(self, image_path, dimensions):
         rect = pygame.Rect(0, 0, dimensions[0], dimensions[1])
-        image = pygame.Surface(rect.size).convert()
-        image.blit(pygame.image.load(image_path).convert(), (0, 0), rect)
-        super(Player, self).__init__(image)
+        super(Player, self).__init__(pygame.image.load(image_path),
+                                     Point(2, 2),
+                                     rect)
+        self.x = SCREEN_SIZE[0] / 2
+        self.y = FLOOR_Y
 
         self.is_jumping = True
         self.is_hitting = False
+        self.is_facing_right = True
 
     def update(self, time):
         self.dy += GRAVITY * time
         super(Player, self).update(time)
         if self.y > FLOOR_Y:
-            self.y = FLOOR_Y
             self.land()
+        # Friction, only on ground
+        if self.is_on_ground():
+            if self.dx > 0:
+                self.dx = max(0, self.dx - FRICTION * time)
+            elif self.dx < 0:
+                self.dx = min(0, self.dx + FRICTION * time)
+        # Facing
         if self.dx > 0:
-            self.dx = max(0, self.dx - FRICTION)
-        else:
-            self.dx = min(0, self.dx + FRICTION)
+            self.is_facing_right = True
+        elif self.dx < 0:
+            self.is_facing_right = False
 
     def land(self):
+        self.y = FLOOR_Y
         if self.is_jumping:
             self.dx = 0
             self.dy = 0
@@ -67,5 +77,6 @@ class Player(Sprite):
         return self.y >= FLOOR_Y
 
     def draw(self, surface):
-        # TODO: boxes
+        # Directional flip
+        self.flip_x = not self.is_facing_right
         super(Player, self).draw(surface)
