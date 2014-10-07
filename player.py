@@ -18,6 +18,7 @@ class Player(Sprite):
                                      rect)
         self.x = SCREEN_SIZE[0] / 2
         self.y = FLOOR_Y
+        self.anchor.y = 0.34
 
         self.is_jumping = True
         self.is_hitting = False

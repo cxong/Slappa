@@ -20,7 +20,7 @@ class Sprite(object):
         self.height = self.crop.height
         self.image = pygame.transform.scale(
             self.image,
-            (image.get_width() * scale.x, image.get_height() * scale.y)).convert_alpha()
+            (image.get_width() * scale.x, image.get_height() * scale.y))
 
         self.dx = 0
         self.dy = 0
@@ -40,6 +40,8 @@ class Sprite(object):
 
     def draw(self, surface):
         cropped = pygame.Surface(self.crop.size)
+        cropped.fill((255, 0, 255, 0))
+        cropped.set_colorkey((255, 0, 255, 0))
         cropped.blit(self.image, (0, 0), self.crop)
         cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
         surface.blit(cropped,
