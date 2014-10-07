@@ -21,6 +21,7 @@ class Player(Sprite):
         self.anchor.y = 0.34
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
+        self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
         self.animations.play('idle')
 
         self.is_jumping = True
@@ -43,6 +44,8 @@ class Player(Sprite):
                 self.dx = max(0, self.dx - FRICTION * time)
             elif self.dx < 0:
                 self.dx = min(0, self.dx + FRICTION * time)
+            else:
+                self.animations.play('idle')
         # Facing
         if self.dx > 0:
             self.is_facing_right = True
@@ -57,7 +60,7 @@ class Player(Sprite):
             self.dy = 0
             self.is_jumping = False
             if not self.is_hitting:
-                # TODO: switch to idle sprite here
+                self.animations.play('idle')
                 pass
 
     def hit(self, direction):
@@ -82,7 +85,7 @@ class Player(Sprite):
         self.is_jumping = True
         self.dy = -JUMP_FORCE
         self.sounds['jump'].play()
-        # TODO: switch to jump sprite
+        self.animations.play('jump')
 
     def is_on_ground(self):
         return self.y >= FLOOR_Y

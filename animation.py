@@ -10,6 +10,16 @@ class Animation(object):
         self.counter = -1
         self.sub_counter = 0
 
+    def reset(self):
+        self.counter = -1
+        self.sub_counter = 0
+
+    def play(self):
+        if self.is_playing:
+            return
+        self.reset()
+        self.is_playing = True
+
     def update(self):
         if not self.is_playing:
             return
@@ -40,8 +50,13 @@ class AnimationManager(object):
         self.animation_playing = None
 
     def play(self, name):
+        if self.animation_playing == self.animations[name]:
+            return
+        # Stop the last animation
+        if self.animation_playing is not None:
+            self.animation_playing.reset()
         self.animation_playing = self.animations[name]
-        self.animation_playing.is_playing = True
+        self.animation_playing.play()
 
     def update(self):
         if self.animation_playing is not None:
