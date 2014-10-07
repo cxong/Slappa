@@ -50,7 +50,8 @@ class AnimationManager(object):
         self.animation_playing = None
 
     def play(self, name):
-        if self.animation_playing == self.animations[name]:
+        if (self.animation_playing == self.animations[name] and
+            self.animation_playing.is_playing):
             return
         # Stop the last animation
         if self.animation_playing is not None:

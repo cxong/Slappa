@@ -1,3 +1,4 @@
+import random
 import pygame
 from config import *
 from sprite import *
@@ -23,15 +24,20 @@ class Player(Sprite):
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
         self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
+        self.animations.animations['hit'] = Animation([144, 145, 146, 147, 148, 149, 149, 149, 149, 150], 1)
+        self.animations.animations['hit_up'] = Animation([128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140], 1)
         self.animations.play('idle')
 
         self.is_jumping = True
         self.is_hitting = False
+        self.hit_duration = 15
+        self.hit_counter = 0
         self.is_facing_right = True
 
         self.sounds = {
             'jump': pygame.mixer.Sound("sounds/jump.ogg"),
-            'land': pygame.mixer.Sound("sounds/land.ogg")
+            'land': pygame.mixer.Sound("sounds/land.ogg"),
+            'swings': load_sounds_from_folder("swings")
         }
 
     def update(self, time):
@@ -42,18 +48,27 @@ class Player(Sprite):
         # Friction, only on ground
         if self.is_on_ground():
             if self.dx > 0:
-                self.animations.play('walk')
+                if not self.is_hitting:
+                    self.animations.play('walk')
                 self.dx = max(0, self.dx - FRICTION * time)
             elif self.dx < 0:
-                self.animations.play('walk')
+                if not self.is_hitting:
+                    self.animations.play('walk')
                 self.dx = min(0, self.dx + FRICTION * time)
             else:
-                self.animations.play('idle')
+                if not self.is_hitting:
+                    self.animations.play('idle')
         # Facing
-        if self.dx > 0:
-            self.is_facing_right = True
-        elif self.dx < 0:
-            self.is_facing_right = False
+        if not self.is_hitting:
+            if self.dx > 0:
+                self.is_facing_right = True
+            elif self.dx < 0:
+                self.is_facing_right = False
+        # Hitting
+        if self.is_hitting:
+            self.hit_counter -= 1
+            if self.hit_counter == 0:
+                self.is_hitting = False
 
     def land(self):
         self.y = FLOOR_Y
@@ -67,18 +82,33 @@ class Player(Sprite):
                 pass
 
     def hit(self, direction):
-        self.is_hitting = True
+        if self.is_hitting:
+            # We are already hitting; ignore
+            return
         if direction == "left":
             # TODO: hit
-            pass
+            self.is_facing_right = False
+            self.animations.play('hit')
+            self.do_hit()
         elif direction == "right":
             # TODO: hit
-            pass
+            self.is_facing_right = True
+            self.animations.play('hit')
+            self.do_hit()
         elif direction == "up":
             # TODO: hit
-            pass
+            self.animations.play('hit_up')
+            self.do_hit()
+
+    def do_hit(self):
+        self.hit_counter = self.hit_duration
+        self.is_hitting = True
+        random.choice(self.sounds['swings']).play()
 
     def move(self, dx):
+        # Can't move when attacking and on ground
+        if self.is_hitting and self.is_on_ground():
+            return
         self.dx += dx * SPEED
         self.dx = clamp(self.dx, -MAX_SPEED, MAX_SPEED)
 

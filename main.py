@@ -4,14 +4,11 @@ import math
 import os
 import random
 import sys
-#from camera import *
 from config import *
 #from enemy import *
-#from gravity_engine import *
 from keyboard import *
 from player import *
 from sprite import *
-#from vec import *
 
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
@@ -23,22 +20,8 @@ clock = pygame.time.Clock()
 keys = Keyboard()
 
 
-def load_from_path(path, load):
-    assets = []
-    for dir_name, dir_names, file_names in os.walk(path):
-        for file_name in file_names:
-            if file_name.endswith(".txt"):
-                continue
-            assets.append(load(os.path.join(dir_name, file_name)))
-    return assets
-
-
 # Sounds
 pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
-def load_sounds_from_folder(folder):
-    def load_sound(path):
-        return pygame.mixer.Sound(path)
-    return load_from_path("sounds/" + folder, load_sound)
 soundHits = load_sounds_from_folder("hits")
 soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
@@ -47,10 +30,6 @@ soundDeaths = load_sounds_from_folder("deaths")
 # Images
 imageBackground = pygame.image.load("images/bg.png")
 player = Player("images/players/cat.png", (64, 64))
-def load_sprites_from_folder(folder):
-    def load_sprite(path):
-        return Sprite(pygame.image.load(path))
-    return load_from_path("images/" + folder, load_sprite)
 things = load_sprites_from_folder("things")
 #imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
