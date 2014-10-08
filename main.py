@@ -1,11 +1,6 @@
-import pygame
 import copy
-import math
-import os
-import random
-import sys
-from config import *
-#from enemy import *
+import pygame
+from enemy import *
 from keyboard import *
 from player import *
 from sprite import *
@@ -27,9 +22,10 @@ soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
 soundDeaths = load_sounds_from_folder("deaths")
 
-# Images
+# Images/templates
 imageBackground = pygame.image.load("images/bg.png")
 player = Player("images/players/cat.png", (64, 64))
+monster = Enemy("images/enemies/monster.png", (64, 64))
 things = load_sprites_from_folder("things")
 #imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
@@ -41,13 +37,16 @@ FRAME_RATE = 60
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
 enemies = []
-'''
-def addEnemy(x, y):
-    s = copy.copy(samurai)
+
+
+def add_enemy(template, x, y):
+    s = copy.copy(template)
     s.x = x
     s.y = y
     enemies.append(s)
-'''
+add_enemy(monster, 100, FLOOR_Y)
+add_enemy(monster, 170, FLOOR_Y)
+add_enemy(monster, 250, FLOOR_Y)
 
 # Game loop
 clock.tick()
@@ -76,7 +75,7 @@ while True:
 
     # remove dead enemies
     enemies = [enemy for enemy in enemies if enemy.health > 0]
-    # TODO: add enemies
+    # TODO: add enemies periodically
     for enemy in enemies:
         enemy.update(clock.get_time())
 

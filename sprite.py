@@ -33,7 +33,7 @@ class Sprite(object):
         self.flip_x = False
         self.flip_y = False
 
-        self.health = 0
+        self.health = 10
 
         self.anchor = Point(0.5, 0.5)
 
