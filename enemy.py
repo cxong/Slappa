@@ -6,8 +6,8 @@ class Enemy(SimpleCharacter):
     SPEED = 0.1
     MAX_SPEED = 0.05
 
-    def __init__(self, image_path, dimensions, players, things, thing_group):
-        super(Enemy, self).__init__(image_path, dimensions)
+    def __init__(self, image_name, dimensions, players, things, thing_group):
+        super(Enemy, self).__init__(image_name, dimensions)
 
         self.anchor.y = 0.84
         self.body.y = -25
@@ -16,16 +16,15 @@ class Enemy(SimpleCharacter):
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
         self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
-        self.animations.animations['hit'] = Animation([16, 17, 18, 19, 20, 21], 1)
+        self.animations.animations['hit'] = Animation([16, 17, 18, 19, 20, 21], 4)
         self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 20)
 
-        self.hit_duration = 50
         self.speed = Enemy.SPEED
         self.max_speed = Enemy.MAX_SPEED
 
         self.sounds = {
-            'swings': load_sounds_from_folder("growls"),
-            'deaths': load_sounds_from_folder("deaths")
+            'swings': assets.sounds['growls'],
+            'deaths': assets.sounds['deaths']
         }
 
         # Random behaviour

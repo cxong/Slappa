@@ -8,8 +8,8 @@ class Player(SimpleCharacter):
     MAX_SPEED = 0.2
     JUMP_FORCE = 0.7
 
-    def __init__(self, image_path, dimensions):
-        super(Player, self).__init__(image_path, dimensions)
+    def __init__(self, image_name, dimensions):
+        super(Player, self).__init__(image_name, dimensions)
 
         self.x = SCREEN_SIZE[0] / 2
         self.y = FLOOR_Y
@@ -21,20 +21,22 @@ class Player(SimpleCharacter):
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
         self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
-        self.animations.animations['hit'] = Animation([144, 145, 146, 147, 148, 149, 149, 149, 149, 150], 1)
+        self.animations.animations['hit'] = Animation([144, 145, 146, 147, 148, 149, 149, 149, 149, 150, 150, 150, 150], 1)
         self.animations.animations['hit_up'] = Animation([128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140], 1)
+        self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
         self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 5)
 
         self.is_jumping = True
-        self.hit_duration = 15
         self.speed = Player.SPEED
         self.max_speed = Player.MAX_SPEED
+        self.health = 5
 
         self.sounds = {
-            'jump': pygame.mixer.Sound("sounds/jump.ogg"),
-            'land': pygame.mixer.Sound("sounds/land.ogg"),
-            'swings': load_sounds_from_folder("swings"),
-            'deaths': [pygame.mixer.Sound("sounds/meow.ogg")]
+            'jump': assets.sounds['jump'],
+            'land': assets.sounds['land'],
+            'swings': assets.sounds['swings'],
+            'hurts': [assets.sounds['meow']],
+            'deaths': [assets.sounds['meow']]
         }
 
     def update(self, time):

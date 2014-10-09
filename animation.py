@@ -7,6 +7,7 @@ class Animation(object):
         self.duration = duration
         self.loop = loop
         self.is_playing = False
+        self.on_complete = []
 
         self.counter = -1
         self.sub_counter = 0
@@ -32,8 +33,14 @@ class Animation(object):
             if self.loop:
                 self.counter = 0
             else:
-                self.counter = len(self.frames) - 1
-                self.is_playing = False
+                self.complete()
+
+    def complete(self):
+        self.reset()
+        self.is_playing = False
+        for (func, data) in self.on_complete:
+            func(data)
+        self.on_complete = []
 
     def get_crop(self, dimensions, image_width):
         frame = self.frames[self.counter]
@@ -52,11 +59,11 @@ class AnimationManager(object):
 
     def play(self, name):
         if (self.animation_playing == self.animations[name] and
-            self.animation_playing.is_playing):
+                self.animation_playing.is_playing):
             return
         # Stop the last animation
         if self.animation_playing is not None:
-            self.animation_playing.reset()
+            self.animation_playing.complete()
         self.animation_playing = self.animations[name]
         self.animation_playing.play()
 
