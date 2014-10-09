@@ -29,7 +29,7 @@ monster = Enemy("images/enemies/monster.png", (64, 64))
 things = load_sprites_from_folder("things")
 
 # Other
-font = pygame.font.SysFont("Comic Sans MS,Comic Sans", 32)
+font = pygame.font.Font("MedievalSharp.ttf", 32)
 
 # Game state
 FRAME_RATE = 60
