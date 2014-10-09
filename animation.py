@@ -1,5 +1,6 @@
 import pygame
 
+
 class Animation(object):
     def __init__(self, frames, duration=1, loop=False):
         self.frames = frames
