@@ -1,5 +1,3 @@
-import pygame
-from config import *
 from simple_character import *
 from util import *
 
@@ -15,7 +13,10 @@ class Player(SimpleCharacter):
 
         self.x = SCREEN_SIZE[0] / 2
         self.y = FLOOR_Y
-        self.anchor.y = 0.34
+        self.anchor.y = 0.84
+        self.body.y = -25
+        self.body.width = self.width * 0.3
+        self.body.height = self.height * 0.3
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
@@ -53,10 +54,7 @@ class Player(SimpleCharacter):
                 self.animations.play('idle')
                 pass
 
-    def hit(self, direction):
-        if self.is_hitting:
-            # We are already hitting; ignore
-            return
+    def do_hit(self, direction):
         if direction == "left":
             # TODO: hit
             pass
@@ -66,7 +64,7 @@ class Player(SimpleCharacter):
         elif direction == "up":
             # TODO: hit
             pass
-        super(Player, self).hit(direction)
+        super(Player, self).do_hit(direction)
 
     def jump(self):
         if not self.is_on_ground():

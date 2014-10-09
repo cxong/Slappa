@@ -1,3 +1,4 @@
+import copy
 from simple_character import *
 
 
@@ -5,10 +6,13 @@ class Enemy(SimpleCharacter):
     SPEED = 0.1
     MAX_SPEED = 0.05
 
-    def __init__(self, image_path, dimensions):
+    def __init__(self, image_path, dimensions, players, things, thing_group):
         super(Enemy, self).__init__(image_path, dimensions)
 
-        self.anchor.y = 0.34
+        self.anchor.y = 0.84
+        self.body.y = -25
+        self.body.width = self.width * 0.5
+        self.body.height = self.height * 0.5
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
         self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
@@ -27,6 +31,17 @@ class Enemy(SimpleCharacter):
         # Random behaviour
         self.delay = 60
         self.action = 'idle'
+
+        self.players = players
+        self.thing = None
+        self.things = things
+        self.thing_group = thing_group
+        self.hit_offset = Point(0, -25)
+
+    def set_up(self, x, y):
+        self.x = x
+        self.y = y
+        self.thing = random.choice(self.things)
 
     def update(self, time):
         super(Enemy, self).update(time)
@@ -58,3 +73,12 @@ class Enemy(SimpleCharacter):
                     continue
                 self.action = new_action
                 break
+
+    def do_hit(self, direction):
+        super(Enemy, self).do_hit(direction)
+        # Throw a thing at a player
+        thing = copy.copy(self.thing)
+        thing.x = self.x + self.hit_offset.x
+        thing.y = self.y + self.hit_offset.y
+        thing.move_to(random.choice(self.players).get_body_center())
+        self.thing_group.append(thing)

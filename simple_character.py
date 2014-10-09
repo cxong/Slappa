@@ -63,16 +63,16 @@ class SimpleCharacter(Sprite):
         if direction == "left":
             self.is_facing_right = False
             self.animations.play('hit')
-            self.do_hit()
+            self.do_hit(direction)
         elif direction == "right":
             self.is_facing_right = True
             self.animations.play('hit')
-            self.do_hit()
+            self.do_hit(direction)
         elif direction == "up":
             self.animations.play('hit_up')
-            self.do_hit()
+            self.do_hit(direction)
 
-    def do_hit(self):
+    def do_hit(self, direction):
         self.hit_counter = self.hit_duration
         self.is_hitting = True
         random.choice(self.sounds['swings']).play()

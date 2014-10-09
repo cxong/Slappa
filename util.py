@@ -1,6 +1,5 @@
 import os
-import pygame
-from sprite import *
+from thing import *
 
 
 def clamp(val, low, high):
@@ -23,7 +22,7 @@ def load_sounds_from_folder(folder):
     return load_from_path("sounds/" + folder, load_sound)
 
 
-def load_sprites_from_folder(folder):
-    def load_sprite(path):
-        return Sprite(pygame.image.load(path))
-    return load_from_path("images/" + folder, load_sprite)
+def load_things_from_folder(folder):
+    def load_thing(path):
+        return Thing(pygame.image.load(path))
+    return load_from_path("images/" + folder, load_thing)

@@ -22,26 +22,30 @@ soundSwings = load_sounds_from_folder("swings")
 soundPain = pygame.mixer.Sound("sounds/meow.ogg")
 soundDeaths = load_sounds_from_folder("deaths")
 
-# Images/templates
-imageBackground = pygame.image.load("images/bg.png")
-player = Player("images/players/cat.png", (64, 64))
-monster = Enemy("images/enemies/monster.png", (64, 64))
-things = load_sprites_from_folder("things")
-
-# Other
-font = pygame.font.Font("MedievalSharp.ttf", 32)
-
 # Game state
 FRAME_RATE = 60
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
 enemies = []
+thing_group = []
+
+# Images/templates
+imageBackground = pygame.image.load("images/bg.png")
+player = Player("images/players/cat.png", (64, 64))
+things = load_things_from_folder("things")
+monster = Enemy("images/enemies/monster.png",
+                (64, 64),
+                [player],
+                things,
+                thing_group)
+
+# Other
+font = pygame.font.Font("MedievalSharp.ttf", 32)
 
 
 def add_enemy(template, x, y):
     s = copy.copy(template)
-    s.x = x
-    s.y = y
+    s.set_up(x, y)
     enemies.append(s)
 add_enemy(monster, 100, FLOOR_Y)
 add_enemy(monster, 170, FLOOR_Y)
@@ -73,17 +77,23 @@ while True:
     player.update(clock.get_time())
 
     # remove dead enemies
-    enemies = [enemy for enemy in enemies if enemy.health > 0]
+    enemies[:] = [enemy for enemy in enemies if enemy.health > 0]
     # TODO: add enemies periodically
     for enemy in enemies:
         enemy.update(clock.get_time())
+    # remove out of bounds things
+    thing_group[:] = [thing for thing in thing_group if thing.health > 0]
+    for thing in thing_group:
+        thing.update(clock.get_time())
 
     #Render
     screenBuf.fill((255, 255, 255))
     screenBuf.blit(imageBackground, (0, 0))
-    player.draw(screenBuf)
     for enemy in enemies:
         enemy.draw(screenBuf)
+    player.draw(screenBuf)
+    for thing in thing_group:
+        thing.draw(screenBuf)
     screenBuf.blit(font.render("HP: " + str(player.health), False, (255, 0, 0)), (50, 50))
     screenBuf.blit(font.render("Score: " + str(score), False, (0, 255, 0)), (500, 50))
     screenBuf.blit(font.render("WAD: punch", False, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
