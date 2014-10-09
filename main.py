@@ -27,10 +27,9 @@ imageBackground = pygame.image.load("images/bg.png")
 player = Player("images/players/cat.png", (64, 64))
 monster = Enemy("images/enemies/monster.png", (64, 64))
 things = load_sprites_from_folder("things")
-#imageSamurai = pygame.image.load("images/enemies/samurai.gif")
 
 # Other
-font = pygame.font.SysFont("Comic Sans", 32)
+font = pygame.font.SysFont("Comic Sans MS,Comic Sans", 32)
 
 # Game state
 FRAME_RATE = 60
