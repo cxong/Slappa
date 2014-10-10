@@ -44,6 +44,7 @@ class Sprite(object):
         self.rotation = 0
         self.angular_velocity = 0
 
+        self.alpha = 1.0
         self.flip_x = False
         self.flip_y = False
 
@@ -88,6 +89,8 @@ class Sprite(object):
             cropped = pygame.Surface(self.crop.size)
             cropped.fill((255, 0, 255, 0))
             cropped.set_colorkey((255, 0, 255, 0))
+            if self.alpha < 1.0:
+                cropped.set_alpha(int(self.alpha * 255))
             crop = self.animations.get_crop(self.crop.size, self.image.get_width())
             cropped.blit(self.image, (0, 0), crop)
             cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)

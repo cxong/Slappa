@@ -1,4 +1,5 @@
 import physics
+from bubble import *
 from enemy import *
 from group import *
 from keyboard import *
@@ -29,12 +30,14 @@ assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 FRAME_RATE = 60
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
+bubbles = Group()
 enemies = Group()
 thing_group = Group()
 hurt_boxes = Group()
 
 # Images/templates
 imageBackground = pygame.image.load("images/bg.png")
+assets.images['explosion'] = pygame.image.load("images/explosion.png")
 assets.images['cat'] = pygame.image.load("images/players/cat.png")
 players = Group()
 players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
@@ -88,34 +91,39 @@ while True:
     # remove out of bounds things
     thing_group.update(clock.get_time())
     hurt_boxes.update(clock.get_time())
+    bubbles.update(clock.get_time())
 
     # Collisions
+    def hit(x, y):
+        random.choice(assets.sounds['hits']).play()
+        bubbles.add(Bubble(x, y))
+
     def enemy_hurt(e, h):
         if not h.has_hit_monster:
             e.hurt()
-            random.choice(assets.sounds['hits']).play()
+            hit((e.x + h.x) / 2, (e.y + h.y) / 2)
             h.has_hit_monster = True
     physics.overlap(enemies, hurt_boxes, enemy_hurt)
 
     # things get hit and become players'
-    def things_hit(t, _):
+    def things_hit(t, p):
         if t.is_enemy:
             t.hit()
-            random.choice(assets.sounds['hits']).play()
+            hit((t.x + p.x) / 2, (t.y + p.y) / 2)
     physics.overlap(thing_group, hurt_boxes, things_hit)
 
     def enemy_get_hit(e, t):
         if not t.is_enemy:
             e.hurt()
             t.health = 0
-            random.choice(assets.sounds['hits']).play()
+            hit((e.x + t.x) / 2, (e.y + t.y) / 2)
     physics.overlap(enemies, thing_group, enemy_get_hit)
 
     def player_get_hit(p, t):
         if t.is_enemy:
             p.hurt()
             t.health = 0
-            random.choice(assets.sounds['hits']).play()
+            hit((p.x + t.x) / 2, (p.y + t.y) / 2)
     physics.overlap(players, thing_group, player_get_hit)
 
     #Render
@@ -129,6 +137,8 @@ while True:
         thing.draw(screenBuf)
     for box in hurt_boxes:
         box.draw(screenBuf)
+    for bubble in bubbles:
+        bubble.draw(screenBuf)
     screenBuf.blit(font.render("HP: " + str(player.health), False, (255, 0, 0)), (50, 50))
     screenBuf.blit(font.render("Score: " + str(score), False, (0, 255, 0)), (500, 50))
     screenBuf.blit(font.render("WAD: punch", False, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
