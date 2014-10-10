@@ -7,9 +7,13 @@ class PlayerHurtBox(Sprite):
         super(PlayerHurtBox, self).__init__(x, y, '')
         self.body.width = dimensions[0]
         self.body.height = dimensions[1]
+        self.count = 5
+        self.has_hit_monster = False
 
     def update(self, time):
-        self.health = 0
+        self.count -= 1
+        if self.count <= 0:
+            self.health = 0
 
 
 class Player(SimpleCharacter):
@@ -23,8 +27,8 @@ class Player(SimpleCharacter):
 
         self.anchor.y = 0.84
         self.body.y = -25
-        self.body.width = self.width * 0.3
-        self.body.height = self.height * 0.3
+        self.body.width = self.width * 0.05
+        self.body.height = self.height * 0.05
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
@@ -68,17 +72,17 @@ class Player(SimpleCharacter):
 
     def do_hit(self, direction):
         if direction == "left":
-            self.hurt_boxes.add(PlayerHurtBox(self.x - self.body.width,
+            self.hurt_boxes.add(PlayerHurtBox(self.x - 32,
                                               self.y + self.body.y,
-                                              (64, 64)))
+                                              (64, 80)))
         elif direction == "right":
-            self.hurt_boxes.add(PlayerHurtBox(self.x + self.body.width,
+            self.hurt_boxes.add(PlayerHurtBox(self.x + 32,
                                               self.y + self.body.y,
-                                              (64, 64)))
+                                              (64, 80)))
         elif direction == "up":
             self.hurt_boxes.add(PlayerHurtBox(self.x,
-                                              self.y + self.body.y + self.body.height,
-                                              (64, 64)))
+                                              self.y + self.body.y - 32,
+                                              (90, 64)))
         super(Player, self).do_hit(direction)
 
     def jump(self):

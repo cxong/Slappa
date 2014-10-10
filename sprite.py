@@ -92,20 +92,20 @@ class Sprite(object):
             cropped.blit(self.image, (0, 0), crop)
             cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
 
-        # Check if we need to offset a bit due to rotation
-        # This is because rotations can cause the surface to enlarge
-        draw_size = [self.width, self.height]
-        if self.allow_rotations:
-            cropped = pygame.transform.rotate(cropped, self.rotation)
-            draw_size = [cropped.get_width(), cropped.get_height()]
-            pygame.draw.circle(surface,
-                               (0, 0, 255),
-                               (int(self.x), int(self.y)),
-                               3,
-                               0)
-        surface.blit(cropped,
-                     (self.x - draw_size[0] * self.anchor.x,
-                     self.y - draw_size[1] * self.anchor.y))
+            # Check if we need to offset a bit due to rotation
+            # This is because rotations can cause the surface to enlarge
+            draw_size = [self.width, self.height]
+            if self.allow_rotations:
+                cropped = pygame.transform.rotate(cropped, self.rotation)
+                draw_size = [cropped.get_width(), cropped.get_height()]
+                pygame.draw.circle(surface,
+                                   (0, 0, 255),
+                                   (int(self.x), int(self.y)),
+                                   3,
+                                   0)
+            surface.blit(cropped,
+                         (self.x - draw_size[0] * self.anchor.x,
+                         self.y - draw_size[1] * self.anchor.y))
         if DEBUG_DRAW_SPRITE_ANCHOR:
             pygame.draw.circle(surface,
                                (0, 0, 255),

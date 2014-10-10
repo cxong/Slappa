@@ -90,24 +90,26 @@ while True:
     hurt_boxes.update(clock.get_time())
 
     # Collisions
+    def enemies_hurt(e, h):
+        if not h.has_hit_monster:
+            e.hurt()
+            random.choice(assets.sounds['hits']).play()
+            h.has_hit_monster = True
+    physics.overlap(enemies, hurt_boxes, enemies_hurt)
+
+    # things get hit and become players'
+    def things_hit(t, _):
+        if t.is_enemy:
+            t.hit()
+            random.choice(assets.sounds['hits']).play()
+    physics.overlap(thing_group, hurt_boxes, things_hit)
+
     def player_get_hit(p, t):
         if t.is_enemy:
             p.hurt()
             t.health = 0
             random.choice(assets.sounds['hits']).play()
     physics.overlap(players, thing_group, player_get_hit)
-
-    def enemies_hurt(e, h):
-        e.hurt()
-        random.choice(assets.sounds['hits']).play()
-    physics.overlap(enemies, hurt_boxes, enemies_hurt)
-
-    # things get hit and become players'
-    def things_hit(t, h):
-        if t.is_enemy:
-            t.hit()
-            random.choice(assets.sounds['hits']).play()
-    physics.overlap(thing_group, hurt_boxes, things_hit)
 
     #Render
     screenBuf.fill((255, 255, 255))
@@ -118,6 +120,8 @@ while True:
         player.draw(screenBuf)
     for thing in thing_group:
         thing.draw(screenBuf)
+    for box in hurt_boxes:
+        box.draw(screenBuf)
     screenBuf.blit(font.render("HP: " + str(player.health), False, (255, 0, 0)), (50, 50))
     screenBuf.blit(font.render("Score: " + str(score), False, (0, 255, 0)), (500, 50))
     screenBuf.blit(font.render("WAD: punch", False, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
