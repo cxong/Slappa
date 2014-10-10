@@ -6,8 +6,8 @@ class Enemy(SimpleCharacter):
     SPEED = 0.1
     MAX_SPEED = 0.05
 
-    def __init__(self, image_name, dimensions, players, things, thing_group):
-        super(Enemy, self).__init__(image_name, dimensions)
+    def __init__(self, x, y, key, dimensions, players, thing_keys, thing_group):
+        super(Enemy, self).__init__(x, y, key, dimensions)
 
         self.anchor.y = 0.84
         self.body.y = -25
@@ -17,13 +17,16 @@ class Enemy(SimpleCharacter):
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
         self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
         self.animations.animations['hit'] = Animation([16, 17, 18, 19, 20, 21], 4)
+        self.animations.animations['hurt'] = Animation([25, 26], 20)
         self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 20)
 
+        self.health = 2
         self.speed = Enemy.SPEED
         self.max_speed = Enemy.MAX_SPEED
 
         self.sounds = {
             'swings': assets.sounds['growls'],
+            'hurts': assets.sounds['deaths'],
             'deaths': assets.sounds['deaths']
         }
 
@@ -32,15 +35,9 @@ class Enemy(SimpleCharacter):
         self.action = 'idle'
 
         self.players = players
-        self.thing = None
-        self.things = things
+        self.thing_key = random.choice(thing_keys)
         self.thing_group = thing_group
         self.hit_offset = Point(0, -25)
-
-    def set_up(self, x, y):
-        self.x = x
-        self.y = y
-        self.thing = random.choice(self.things)
 
     def update(self, time):
         super(Enemy, self).update(time)
@@ -76,8 +73,7 @@ class Enemy(SimpleCharacter):
     def do_hit(self, direction):
         super(Enemy, self).do_hit(direction)
         # Throw a thing at a player
-        thing = copy.copy(self.thing)
-        thing.x = self.x + self.hit_offset.x
-        thing.y = self.y + self.hit_offset.y
-        thing.move_to(random.choice(self.players).get_body_center())
-        self.thing_group.append(thing)
+        self.thing_group.add(Thing(self.x + self.hit_offset.x,
+                                   self.y + self.hit_offset.y,
+                                   self.thing_key,
+                                   random.choice(self.players.children).get_body_center()))

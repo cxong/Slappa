@@ -6,25 +6,30 @@ from point import *
 
 class Sprite(object):
     def __init__(self,
-                 image_name,
+                 x, y,
+                 key,
                  scale=Point(1, 1),
                  crop=pygame.Rect(0, 0, 0, 0)):
-        self.image = assets.images[image_name]
+        if key != '':
+            self.image = assets.images[key]
+        else:
+            self.image = None
 
         self.crop = crop
         self.crop.width *= scale.x
         self.crop.height *= scale.y
-        if crop.width == 0 or crop.height == 0:
+        if (crop.width == 0 or crop.height == 0) and key != '':
             self.crop = pygame.Rect(0, 0,
-                                    assets.images[image_name].get_width() * scale.x,
-                                    assets.images[image_name].get_height() * scale.y)
+                                    assets.images[key].get_width() * scale.x,
+                                    assets.images[key].get_height() * scale.y)
         self.width = self.crop.width
         self.height = self.crop.height
-        self.image = pygame.transform.scale(
-            self.image,
-            (
-                assets.images[image_name].get_width() * scale.x,
-                assets.images[image_name].get_height() * scale.y))
+        if self.image is not None:
+            self.image = pygame.transform.scale(
+                self.image,
+                (
+                    assets.images[key].get_width() * scale.x,
+                    assets.images[key].get_height() * scale.y))
 
         self.animations = AnimationManager()
 
@@ -32,8 +37,8 @@ class Sprite(object):
 
         self.dx = 0
         self.dy = 0
-        self.x = 0
-        self.y = 0
+        self.x = x
+        self.y = y
         self.allow_rotations = False
         # Rotation in degrees
         self.rotation = 0
@@ -46,6 +51,9 @@ class Sprite(object):
         self.out_of_bounds_kill = True
 
         self.anchor = Point(0.5, 0.5)
+
+    def exists(self):
+        return self.health > 0
 
     def update(self, time):
         self.x += self.dx * time
@@ -76,12 +84,13 @@ class Sprite(object):
             surface.blit(s, (
                 self.x + self.body.x - self.body.width / 2,
                 self.y + self.body.y - self.body.height / 2))
-        cropped = pygame.Surface(self.crop.size)
-        cropped.fill((255, 0, 255, 0))
-        cropped.set_colorkey((255, 0, 255, 0))
-        crop = self.animations.get_crop(self.crop.size, self.image.get_width())
-        cropped.blit(self.image, (0, 0), crop)
-        cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
+        if self.image is not None:
+            cropped = pygame.Surface(self.crop.size)
+            cropped.fill((255, 0, 255, 0))
+            cropped.set_colorkey((255, 0, 255, 0))
+            crop = self.animations.get_crop(self.crop.size, self.image.get_width())
+            cropped.blit(self.image, (0, 0), crop)
+            cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
 
         # Check if we need to offset a bit due to rotation
         # This is because rotations can cause the surface to enlarge

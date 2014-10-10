@@ -26,5 +26,5 @@ def load_things_from_folder(folder):
     def load_thing(path):
         name = path[path.rfind("/") + 1:]
         assets.images[name] = pygame.image.load(path)
-        return Thing(name)
+        return name
     return load_from_path("images/" + folder, load_thing)

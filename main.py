@@ -1,5 +1,6 @@
 import physics
 from enemy import *
+from group import *
 from keyboard import *
 from player import *
 from sprite import *
@@ -16,7 +17,7 @@ keys = Keyboard()
 
 # Sounds
 pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
-soundHits = load_sounds_from_folder("hits")
+assets.sounds['hits'] = load_sounds_from_folder("hits")
 assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
 assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
 assets.sounds['swings'] = load_sounds_from_folder("swings")
@@ -28,36 +29,32 @@ assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 FRAME_RATE = 60
 screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
-enemies = []
-thing_group = []
+enemies = Group()
+thing_group = Group()
+hurt_boxes = Group()
 
 # Images/templates
 imageBackground = pygame.image.load("images/bg.png")
 assets.images['cat'] = pygame.image.load("images/players/cat.png")
-players = [Player('cat', (64, 64))]
-things = load_things_from_folder("things")
+players = Group()
+players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
+thing_keys = load_things_from_folder("things")
 assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
-monster = Enemy('monster',
-                (64, 64),
-                players,
-                things,
-                thing_group)
 
 # Other
 font = pygame.font.Font("MedievalSharp.ttf", 32)
 
 
-def add_enemy(template, x, y):
-    m = Enemy('monster',
-              (64, 64),
-              players,
-              things,
-              thing_group)
-    m.set_up(x, y)
-    enemies.append(m)
-add_enemy(monster, 100, FLOOR_Y)
-add_enemy(monster, 170, FLOOR_Y)
-add_enemy(monster, 250, FLOOR_Y)
+def add_enemy(x, y):
+    enemies.add(Enemy(x, y,
+                      'monster',
+                      (64, 64),
+                      players,
+                      thing_keys,
+                      thing_group))
+add_enemy(100, FLOOR_Y)
+add_enemy(170, FLOOR_Y)
+add_enemy(250, FLOOR_Y)
 
 # Game loop
 clock.tick()
@@ -86,20 +83,31 @@ while True:
         player.update(clock.get_time())
 
     # remove dead enemies
-    enemies[:] = [enemy for enemy in enemies if enemy.health > 0]
+    enemies.update(clock.get_time())
     # TODO: add enemies periodically
-    for enemy in enemies:
-        enemy.update(clock.get_time())
     # remove out of bounds things
-    thing_group[:] = [thing for thing in thing_group if thing.health > 0]
-    for thing in thing_group:
-        thing.update(clock.get_time())
+    thing_group.update(clock.get_time())
+    hurt_boxes.update(clock.get_time())
 
     # Collisions
     def player_get_hit(p, t):
-        p.hurt()
-        t.health = 0
+        if t.is_enemy:
+            p.hurt()
+            t.health = 0
+            random.choice(assets.sounds['hits']).play()
     physics.overlap(players, thing_group, player_get_hit)
+
+    def enemies_hurt(e, h):
+        e.hurt()
+        random.choice(assets.sounds['hits']).play()
+    physics.overlap(enemies, hurt_boxes, enemies_hurt)
+
+    # things get hit and become players'
+    def things_hit(t, h):
+        if t.is_enemy:
+            t.hit()
+            random.choice(assets.sounds['hits']).play()
+    physics.overlap(thing_group, hurt_boxes, things_hit)
 
     #Render
     screenBuf.fill((255, 255, 255))

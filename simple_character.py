@@ -2,9 +2,10 @@ from util import *
 
 
 class SimpleCharacter(Sprite):
-    def __init__(self, image_name, dimensions):
+    def __init__(self, x, y, key, dimensions):
         rect = pygame.Rect(0, 0, dimensions[0], dimensions[1])
-        super(SimpleCharacter, self).__init__(image_name,
+        super(SimpleCharacter, self).__init__(x, y,
+                                              key,
                                               Point(2, 2),
                                               rect)
 
@@ -17,6 +18,7 @@ class SimpleCharacter(Sprite):
 
         self.is_hitting = False
         self.is_hurt = False
+        self.is_dying = False
         self.is_facing_right = True
         self.speed = 0.1
         self.max_speed = 0.05
@@ -87,16 +89,30 @@ class SimpleCharacter(Sprite):
     def is_on_ground(self):
         return self.y >= FLOOR_Y
 
+    def exists(self):
+        return self.is_dying or super(SimpleCharacter, self).exists()
+
     def hurt(self):
         self.health -= 1
-        random.choice(self.sounds['hurts']).play()
-        self.is_hurt = True
 
-        self.animations.play('hurt')
+        if self.health > 0:
+            random.choice(self.sounds['hurts']).play()
+            self.is_hurt = True
 
-        def after_hurt(s):
-            s.is_hurt = False
-        self.animations.animation_playing.on_complete = [(after_hurt, self)]
+            self.animations.play('hurt')
+
+            def after_hurt(s):
+                s.is_hurt = False
+            self.animations.animation_playing.on_complete = [(after_hurt, self)]
+        else:
+            # Dead
+            random.choice(self.sounds['deaths']).play()
+
+            self.animations.play('die')
+
+            def after_die(s):
+                s.is_dying = False
+            self.animations.animation_playing.on_complete = [(after_die, self)]
 
     def draw(self, surface):
         # Directional flip

@@ -2,17 +2,25 @@ from simple_character import *
 from util import *
 
 
+class PlayerHurtBox(Sprite):
+    def __init__(self, x, y, dimensions):
+        super(PlayerHurtBox, self).__init__(x, y, '')
+        self.body.width = dimensions[0]
+        self.body.height = dimensions[1]
+
+    def update(self, time):
+        self.health = 0
+
+
 class Player(SimpleCharacter):
     GRAVITY = 0.00198
     SPEED = 0.3
     MAX_SPEED = 0.2
     JUMP_FORCE = 0.7
 
-    def __init__(self, image_name, dimensions):
-        super(Player, self).__init__(image_name, dimensions)
+    def __init__(self, x, y, key, dimensions, hurt_boxes):
+        super(Player, self).__init__(x, y, key, dimensions)
 
-        self.x = SCREEN_SIZE[0] / 2
-        self.y = FLOOR_Y
         self.anchor.y = 0.84
         self.body.y = -25
         self.body.width = self.width * 0.3
@@ -24,7 +32,7 @@ class Player(SimpleCharacter):
         self.animations.animations['hit'] = Animation([144, 145, 146, 147, 148, 149, 149, 149, 149, 150, 150, 150, 150], 1)
         self.animations.animations['hit_up'] = Animation([128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140], 1)
         self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
-        self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 5)
+        self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 10)
 
         self.is_jumping = True
         self.speed = Player.SPEED
@@ -38,6 +46,8 @@ class Player(SimpleCharacter):
             'hurts': [assets.sounds['meow']],
             'deaths': [assets.sounds['meow']]
         }
+
+        self.hurt_boxes = hurt_boxes
 
     def update(self, time):
         self.dy += Player.GRAVITY * time
@@ -58,14 +68,17 @@ class Player(SimpleCharacter):
 
     def do_hit(self, direction):
         if direction == "left":
-            # TODO: hit
-            pass
+            self.hurt_boxes.add(PlayerHurtBox(self.x - self.body.width,
+                                              self.y + self.body.y,
+                                              (64, 64)))
         elif direction == "right":
-            # TODO: hit
-            pass
+            self.hurt_boxes.add(PlayerHurtBox(self.x + self.body.width,
+                                              self.y + self.body.y,
+                                              (64, 64)))
         elif direction == "up":
-            # TODO: hit
-            pass
+            self.hurt_boxes.add(PlayerHurtBox(self.x,
+                                              self.y + self.body.y + self.body.height,
+                                              (64, 64)))
         super(Player, self).do_hit(direction)
 
     def jump(self):
