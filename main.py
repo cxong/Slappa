@@ -90,12 +90,12 @@ while True:
     hurt_boxes.update(clock.get_time())
 
     # Collisions
-    def enemies_hurt(e, h):
+    def enemy_hurt(e, h):
         if not h.has_hit_monster:
             e.hurt()
             random.choice(assets.sounds['hits']).play()
             h.has_hit_monster = True
-    physics.overlap(enemies, hurt_boxes, enemies_hurt)
+    physics.overlap(enemies, hurt_boxes, enemy_hurt)
 
     # things get hit and become players'
     def things_hit(t, _):
@@ -103,6 +103,13 @@ while True:
             t.hit()
             random.choice(assets.sounds['hits']).play()
     physics.overlap(thing_group, hurt_boxes, things_hit)
+
+    def enemy_get_hit(e, t):
+        if not t.is_enemy:
+            e.hurt()
+            t.health = 0
+            random.choice(assets.sounds['hits']).play()
+    physics.overlap(enemies, thing_group, enemy_get_hit)
 
     def player_get_hit(p, t):
         if t.is_enemy:
