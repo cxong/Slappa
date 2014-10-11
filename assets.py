@@ -1,2 +1,3 @@
 images = {}
 sounds = {}
+fonts = {}

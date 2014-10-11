@@ -3,12 +3,15 @@ from config import *
 
 
 class StateManager(object):
-    def __init__(self, screen):
+    def __init__(self, game, screen):
         self.states = {}
         self.screen = screen
+        self.game = game
 
     def add(self, key, state):
         self.states[key] = state
+        state.state = self
+        state.game = self.game
 
     def start(self, key):
         self.states[key].start(self.screen)
@@ -21,6 +24,8 @@ class State(object):
         self.update = None
         self.draw = None
         self.is_quit = False
+        self.state = None
+        self.game = None
 
     def start(self, screen):
         screenBuf = pygame.Surface(SCREEN_SIZE)
@@ -36,7 +41,7 @@ class State(object):
                     self.is_quit = True
 
             if self.update is not None:
-                self.update(self, clock.get_time())
+                self.update(clock.get_time())
             if self.draw is not None:
                 self.draw(screenBuf)
                 screen.blit(screenBuf, (0, 0))

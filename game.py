@@ -7,8 +7,10 @@ class Game(object):
         pygame.init()
         pygame.display.set_caption(caption)
         screen = pygame.display.set_mode([width, height])
+        self.width = width
+        self.height = height
 
-        self.state = StateManager(screen)
+        self.state = StateManager(self, screen)
 
     def __exit__(self, type, value, traceback):
         pygame.mixer.quit()

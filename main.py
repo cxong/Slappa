@@ -14,6 +14,62 @@ game = Game("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
 keys = Keyboard()
 
 
+# Title screen
+class TitleState(State):
+    def __init__(self):
+        super(TitleState, self).__init__()
+
+        def preload():
+            pygame.mixer.music.load("sounds/asian strings.mp3")
+            assets.images['background'] = pygame.image.load("images/bg.png")
+            assets.images['logo'] = pygame.image.load("images/logo.png")
+            assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
+            assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
+        self.preload = preload
+
+        def create():
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.7)
+        self.create = create
+
+        def update(time):
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                self.is_quit = True
+
+            # Detect input and add player
+            # TODO: choose different chars
+            if (keys[pygame.K_LEFT] or
+                    keys[pygame.K_RIGHT] or
+                    keys[pygame.K_UP] or
+                    keys[pygame.K_a] or
+                    keys[pygame.K_d] or
+                    keys[pygame.K_w]):
+                self.state.start('game')
+        self.update = update
+
+        def draw(surface):
+            surface.blit(assets.images['background'], (0, 0))
+            logo = assets.images['logo']
+            surface.blit(logo, ((self.game.width - logo.get_width()) / 2,
+                                (self.game.height - logo.get_height()) / 2))
+            font = assets.fonts['big']
+            surface.blit(font.render("Slappa!",
+                                     True,
+                                     (255, 140, 160)),
+                         (280, self.game.height / 2))
+            font = assets.fonts['font']
+            surface.blit(font.render("WAD: punch",
+                                     True,
+                                     (0, 0, 0)),
+                         (50, self.game.height - 50))
+            surface.blit(font.render("Arrows: move",
+                                     True,
+                                     (0, 0, 0)),
+                         (self.game.width - 300, self.game.height - 50))
+        self.draw = draw
+
+
 # Game state
 class GameState(State):
     def __init__(self):
@@ -26,8 +82,6 @@ class GameState(State):
         self.players = Group()
         self.enemy_generator = EnemyGenerator(
             self.enemies, self.players, self.thing_group)
-        self.imageBackground = pygame.image.load("images/bg.png")
-        self.font = pygame.font.Font("MedievalSharp.ttf", 32)
 
         def preload():
             # Sounds
@@ -58,11 +112,11 @@ class GameState(State):
             pygame.mixer.music.set_volume(0.7)
         self.create = create
 
-        def update(state, time):
+        def update(time):
             # Keys
             keys.update()
             if keys.is_escape():
-                state.is_quit = True
+                self.is_quit = True
 
             #Update
             for player in self.players:
@@ -125,8 +179,7 @@ class GameState(State):
 
         def draw(surface):
             #Render
-            surface.fill((255, 255, 255))
-            surface.blit(self.imageBackground, (0, 0))
+            surface.blit(assets.images['background'], (0, 0))
             for enemy in self.enemies:
                 enemy.draw(surface)
             for player in self.players:
@@ -139,13 +192,13 @@ class GameState(State):
                 bubble.draw(surface)
             # TODO: multiple players and HUD
             player = self.players[0]
-            surface.blit(self.font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
-            surface.blit(self.font.render("Score: " + str(self.score), True, (0, 255, 0)), (500, 50))
-            surface.blit(self.font.render("WAD: punch", True, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
-            surface.blit(self.font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))
+            font = assets.fonts['font']
+            surface.blit(font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
+            surface.blit(font.render("Score: " + str(self.score), True, (0, 255, 0)), (500, 50))
             if player.health <= 0:
-                surface.blit(self.font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
+                surface.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
         self.draw = draw
 
 game.state.add('game', GameState())
-game.state.start('game')
+game.state.add('title', TitleState())
+game.state.start('title')
