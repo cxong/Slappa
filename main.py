@@ -88,6 +88,8 @@ while True:
     # remove dead enemies
     enemies.update(clock.get_time())
     # TODO: add enemies periodically
+    if len(enemies.children) < 10:
+        add_enemy(random.randint(0, SCREEN_SIZE[0]), FLOOR_Y)
     # remove out of bounds things
     thing_group.update(clock.get_time())
     hurt_boxes.update(clock.get_time())
