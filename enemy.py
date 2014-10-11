@@ -3,7 +3,9 @@ from simple_character import *
 
 class Enemy(SimpleCharacter):
     def __init__(self, x, y, key, players, thing_keys, things):
-        if key == 'monster':
+        if key == 'zombie':
+            self.init_zombie(x, y)
+        elif key == 'monster':
             self.init_monster(x, y)
         elif key == 'flying':
             self.init_flying(x, y)
@@ -25,6 +27,22 @@ class Enemy(SimpleCharacter):
             'hurts': assets.sounds['deaths'],
             'deaths': assets.sounds['deaths']
         }
+
+    def init_zombie(self, x, y):
+        super(Enemy, self).__init__(x, y, 'zombie', (64, 64))
+
+        self.body.y = -35
+        self.anchor.y = 0.95
+
+        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
+        self.animations.animations['walk'] = Animation([8, 9, 10, 11], 20, True)
+        self.animations.animations['hit'] = Animation([17, 18, 19], 7)
+        self.animations.animations['hurt'] = Animation([25, 26], 20)
+        self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 3)
+
+        self.health = 2
+        self.speed = 0.1
+        self.max_speed = 0.05
 
     def init_monster(self, x, y):
         super(Enemy, self).__init__(x, y, 'monster', (64, 64))

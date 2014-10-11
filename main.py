@@ -42,6 +42,7 @@ assets.images['cat'] = pygame.image.load("images/players/cat.png")
 players = Group()
 players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
 enemy_generator = EnemyGenerator(enemies, players, thing_group)
+assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
 assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
 assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
 
