@@ -77,8 +77,8 @@ while True:
         player.update(clock.get_time())
 
     # remove dead enemies
-    enemies.update(clock.get_time())
     enemy_generator.update(clock.get_time())
+    enemies.update(clock.get_time())
     # remove out of bounds things
     thing_group.update(clock.get_time())
     hurt_boxes.update(clock.get_time())

@@ -50,6 +50,7 @@ class Sprite(object):
 
         self.health = 10
         self.out_of_bounds_kill = True
+        self.gravity = 0.0
 
         self.anchor = Point(0.5, 0.5)
 
@@ -57,8 +58,13 @@ class Sprite(object):
         return self.health > 0
 
     def update(self, time):
+        if self.gravity != 0.0:
+            self.dy += self.gravity * time
         self.x += self.dx * time
         self.y += self.dy * time
+        if self.gravity != 0.0:
+            if self.y > FLOOR_Y:
+                self.land()
         if self.allow_rotations:
             self.rotation += self.angular_velocity * time
         self.animations.update()

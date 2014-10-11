@@ -39,11 +39,12 @@ class Player(SimpleCharacter):
         self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
         self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 7)
 
-        self.is_jumping = True
         self.speed = Player.SPEED
         self.max_speed = Player.MAX_SPEED
         self.health = 5
         self.out_of_bounds_kill = False
+        self.gravity = Player.GRAVITY
+        self.jump_force = Player.JUMP_FORCE
 
         self.sounds = {
             'jump': assets.sounds['jump'],
@@ -56,27 +57,12 @@ class Player(SimpleCharacter):
         self.hurt_boxes = hurt_boxes
 
     def update(self, time):
-        self.dy += Player.GRAVITY * time
         super(Player, self).update(time)
-        if self.y > FLOOR_Y:
-            self.land()
         # Keep inside world
         self.x = max([self.x, self.width / 2])
         self.x = min([self.x, SCREEN_SIZE[0] - self.width / 2])
         self.y = max([self.y, self.height / 2])
         self.y = min([self.y, SCREEN_SIZE[1] - self.height / 2])
-
-    def land(self):
-        self.y = FLOOR_Y
-        if self.health > 0:
-            if self.is_jumping:
-                self.sounds['land'].play()
-                self.dx = 0
-                self.dy = 0
-                self.is_jumping = False
-                if not self.is_hitting:
-                    self.animations.play('idle')
-                    pass
 
     def do_hit(self, direction):
         if direction == "left":
@@ -95,18 +81,6 @@ class Player(SimpleCharacter):
                                               (90, 64),
                                               self))
         super(Player, self).do_hit(direction)
-
-    def jump(self):
-        # Can't move when dead
-        if self.health <= 0:
-            return
-
-        if not self.is_on_ground():
-            return
-        self.is_jumping = True
-        self.dy = -Player.JUMP_FORCE
-        self.sounds['jump'].play()
-        self.animations.play('jump')
 
     def draw(self, surface):
         super(Player, self).draw(surface)

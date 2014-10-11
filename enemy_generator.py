@@ -17,7 +17,8 @@ class EnemyGenerator(object):
             self.spawn_counter = self.spawn_period
             if len(self.enemies.children) < self.max_enemies:
                 choice = random.choice([
-                    'zombie', 'zombie',
+                    'zombie',
+                    'monster',
                     'flying'
                 ])
                 y = FLOOR_Y

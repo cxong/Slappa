@@ -9,11 +9,11 @@ class Animation(object):
         self.is_playing = False
         self.on_complete = []
 
-        self.counter = -1
+        self.counter = 0
         self.sub_counter = 0
 
     def reset(self):
-        self.counter = -1
+        self.counter = 0
         self.sub_counter = 0
 
     def play(self):

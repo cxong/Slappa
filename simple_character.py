@@ -15,18 +15,23 @@ class SimpleCharacter(Sprite):
         self.animations.animations['hit_up'] = Animation([], 1)
         self.animations.animations['hurt'] = Animation([], 1)
         self.animations.animations['die'] = Animation([], 1)
+        self.animations.animations['jump'] = Animation([], 1)
 
         self.is_hitting = False
         self.is_hurt = False
         self.is_dying = False
         self.is_facing_right = True
+        self.is_jumping = True
         self.speed = 0.1
         self.max_speed = 0.05
+        self.jump_force = 0.0
 
         self.sounds = {
             'swings': [],
             'hurts': [],
-            'deaths': []
+            'deaths': [],
+            'land': None,
+            'jump': None
         }
 
     def update(self, time):
@@ -58,6 +63,18 @@ class SimpleCharacter(Sprite):
         else:
             self.dx = 0
 
+    def land(self):
+        self.y = FLOOR_Y
+        if self.health > 0:
+            if self.is_jumping:
+                if self.sounds['land'] is not None:
+                    self.sounds['land'].play()
+                self.dx = 0
+                self.dy = 0
+                self.is_jumping = False
+                if not self.is_hitting:
+                    self.animations.play('idle')
+
     def hit(self, direction):
         if self.health <= 0:
             return
@@ -84,6 +101,22 @@ class SimpleCharacter(Sprite):
         def after_hit(s):
             s.is_hitting = False
         self.animations.animation_playing.on_complete = [(after_hit, self)]
+
+    def jump(self):
+        # Can't jump if no gravity
+        if self.gravity == 0.0:
+            return
+        # Can't move when dead
+        if self.health <= 0:
+            return
+
+        if not self.is_on_ground():
+            return
+        self.is_jumping = True
+        self.dy = -self.jump_force
+        if self.sounds['jump'] is not None:
+            self.sounds['jump'].play()
+        self.animations.play('jump')
 
     def move(self, dx):
         # Can't move when dead
