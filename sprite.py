@@ -101,11 +101,6 @@ class Sprite(object):
             if self.allow_rotations:
                 cropped = pygame.transform.rotate(cropped, self.rotation)
                 draw_size = [cropped.get_width(), cropped.get_height()]
-                pygame.draw.circle(surface,
-                                   (0, 0, 255),
-                                   (int(self.x), int(self.y)),
-                                   3,
-                                   0)
             surface.blit(cropped,
                          (self.x - draw_size[0] * self.anchor.x,
                          self.y - draw_size[1] * self.anchor.y))

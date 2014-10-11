@@ -24,3 +24,11 @@ class Point(object):
 
     def get_magnitude(self):
         return math.sqrt((self.x * self.x) + (self.y * self.y))
+
+    def dot_product(self, other):
+        return self.x * other.x + self.y * other.y
+
+    def distance2(self, other):
+        dx = self.x - other.x
+        dy = self.y - other.y
+        return dx**2 + dy**2

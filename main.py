@@ -95,10 +95,10 @@ while True:
     physics.overlap(enemies, hurt_boxes, enemy_hurt)
 
     # things get hit and become players'
-    def things_hit(t, p):
+    def things_hit(t, h):
         if t.is_enemy:
-            t.hit()
-            hit((t.x + p.x) / 2, (t.y + p.y) / 2)
+            t.hit(h.player, enemies)
+            hit((t.x + h.x) / 2, (t.y + h.y) / 2)
     physics.overlap(thing_group, hurt_boxes, things_hit)
 
     def enemy_get_hit(e, t):
@@ -128,7 +128,7 @@ while True:
         box.draw(screenBuf)
     for bubble in bubbles:
         bubble.draw(screenBuf)
-    screenBuf.blit(font.render("HP: " + str(player.health), True, (255, 0, 0)), (50, 50))
+    screenBuf.blit(font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
     screenBuf.blit(font.render("Score: " + str(score), True, (0, 255, 0)), (500, 50))
     screenBuf.blit(font.render("WAD: punch", True, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
     screenBuf.blit(font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))

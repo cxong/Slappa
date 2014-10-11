@@ -16,7 +16,26 @@ class Thing(Sprite):
         self.dx, self.dy = scaled.x, scaled.y
         self.is_enemy = True
 
-    def hit(self):
-        # TODO: angle towards nearest enemy
-        self.dx *= -1
+    def hit(self, player, enemies):
+        d = Point(self.x - (player.x + player.body.x),
+                  self.y - (player.y + player.body.y)).normalize()
+        # find enemies within arc of deflection
+        in_arc_enemies = []
+        for enemy in enemies:
+            ed = Point(enemy.x - self.x, enemy.y - self.y)
+            ed.normalize()
+            half_angle = math.cos(
+                math.radians(DEFLECTION_AUTOAIM_ANGLE / 2))
+            if d.dot_product(ed) > half_angle:
+                in_arc_enemies.append(enemy)
+        # use closest enemy
+        if len(in_arc_enemies) > 0:
+            enemy = min(
+                in_arc_enemies,
+                key=lambda e: Point(e.x, e.y).distance2(
+                    Point(self.x, self.y)))
+            d = Point(enemy.x + enemy.body.x - self.x,
+                      enemy.y + enemy.body.y - self.y).normalize()
+        d.set_magnitude(Thing.SPEED * DEFLECTION_SPEED_SCALE)
+        self.dx, self.dy = d.x, d.y
         self.is_enemy = False
