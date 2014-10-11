@@ -2,16 +2,35 @@ from simple_character import *
 
 
 class Enemy(SimpleCharacter):
-    SPEED = 0.1
-    MAX_SPEED = 0.05
+    def __init__(self, x, y, key, players, thing_keys, things):
+        if key == 'monster':
+            self.init_monster(x, y)
+        elif key == 'flying':
+            self.init_flying(x, y)
 
-    def __init__(self, x, y, key, dimensions, players, thing_keys, thing_group):
-        super(Enemy, self).__init__(x, y, key, dimensions)
-
-        self.anchor.y = 0.84
-        self.body.y = -25
         self.body.width = self.width * 0.5
         self.body.height = self.height * 0.5
+
+        # Random behaviour
+        self.delay = 60
+        self.action = 'idle'
+
+        self.players = players
+        self.thing_key = random.choice(thing_keys)
+        self.thing_group = things
+        self.hit_offset = Point(0, -25)
+
+        self.sounds = {
+            'swings': assets.sounds['growls'],
+            'hurts': assets.sounds['deaths'],
+            'deaths': assets.sounds['deaths']
+        }
+
+    def init_monster(self, x, y):
+        super(Enemy, self).__init__(x, y, 'monster', (64, 64))
+
+        self.body.y = -25
+        self.anchor.y = 0.84
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
         self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
@@ -20,23 +39,23 @@ class Enemy(SimpleCharacter):
         self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 3)
 
         self.health = 2
-        self.speed = Enemy.SPEED
-        self.max_speed = Enemy.MAX_SPEED
+        self.speed = 0.1
+        self.max_speed = 0.05
 
-        self.sounds = {
-            'swings': assets.sounds['growls'],
-            'hurts': assets.sounds['deaths'],
-            'deaths': assets.sounds['deaths']
-        }
+    def init_flying(self, x, y):
+        super(Enemy, self).__init__(x, y, 'flying', (64, 64))
 
-        # Random behaviour
-        self.delay = 60
-        self.action = 'idle'
+        #self.anchor.y = 0.84
 
-        self.players = players
-        self.thing_key = random.choice(thing_keys)
-        self.thing_group = thing_group
-        self.hit_offset = Point(0, -25)
+        self.animations.animations['idle'] = Animation([0, 1, 2, 3, 4], 10, True)
+        self.animations.animations['walk'] = Animation([0, 1, 2, 3, 4], 10, True)
+        self.animations.animations['hit'] = Animation([9, 10, 11, 12], 5)
+        self.animations.animations['hurt'] = Animation([17, 18], 20)
+        self.animations.animations['die'] = Animation([17, 18, 19, 20, 21, 22, 23], 3)
+
+        self.health = 1
+        self.speed = 0.2
+        self.max_speed = 0.1
 
     def update(self, time):
         super(Enemy, self).update(time)

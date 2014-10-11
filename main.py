@@ -43,6 +43,7 @@ players = Group()
 players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
 enemy_generator = EnemyGenerator(enemies, players, thing_group)
 assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
+assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
 
 # Other
 font = pygame.font.Font("MedievalSharp.ttf", 32)
@@ -92,6 +93,8 @@ while True:
             if e.hurt():
                 hit((e.x + h.x) / 2, (e.y + h.y) / 2)
                 h.has_hit_monster = True
+                global score
+                score += 1
     physics.overlap(enemies, hurt_boxes, enemy_hurt)
 
     # things get hit and become players'
@@ -99,6 +102,8 @@ while True:
         if t.is_enemy:
             t.hit(h.player, enemies)
             hit((t.x + h.x) / 2, (t.y + h.y) / 2)
+            global score
+            score += 1
     physics.overlap(thing_group, hurt_boxes, things_hit)
 
     def enemy_get_hit(e, t):
@@ -106,6 +111,8 @@ while True:
             if e.hurt():
                 t.health = 0
                 hit((e.x + t.x) / 2, (e.y + t.y) / 2)
+                global score
+                score += 2
     physics.overlap(enemies, thing_group, enemy_get_hit)
 
     def player_get_hit(p, t):

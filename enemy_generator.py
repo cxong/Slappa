@@ -16,11 +16,17 @@ class EnemyGenerator(object):
         if self.spawn_counter <= 0:
             self.spawn_counter = self.spawn_period
             if len(self.enemies.children) < self.max_enemies:
+                choice = random.choice([
+                    'monster', 'monster',
+                    'flying'
+                ])
+                y = FLOOR_Y
+                if choice == 'flying':
+                    y = random.randint(100, FLOOR_Y - 100)
                 self.enemies.add(Enemy(
                     random.choice([0, SCREEN_SIZE[0]]),
-                    FLOOR_Y,
-                    'monster',
-                    (64, 64),
+                    y,
+                    choice,
                     self.players,
                     self.thing_keys,
                     self.things))
