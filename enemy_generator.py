@@ -4,7 +4,7 @@ from enemy import *
 class EnemyGenerator(object):
     def __init__(self, enemies, players, things):
         self.spawn_counter = 0
-        self.spawn_period = 300
+        self.spawn_period = 100
         self.max_enemies = 3
         self.enemies = enemies
         self.players = players
@@ -24,3 +24,9 @@ class EnemyGenerator(object):
                     self.players,
                     self.thing_keys,
                     self.things))
+                # Step it up: increase rate of spawning
+                self.spawn_period -= 10
+                if self.spawn_period <= 0:
+                    # Really step it up
+                    self.max_enemies += 1
+                    self.spawn_period = 100
