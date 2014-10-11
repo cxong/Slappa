@@ -65,9 +65,9 @@ class Sprite(object):
 
         if (self.out_of_bounds_kill and (
                 self.x + self.width < 0 or
-                self.x > SCREEN_SIZE[0] or
+                self.x - self.width > SCREEN_SIZE[0] or
                 self.y + self.height < 0 or
-                self.y > SCREEN_SIZE[1])):
+                self.y - self.height > SCREEN_SIZE[1])):
             self.health = 0
 
     def draw(self, surface):

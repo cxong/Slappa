@@ -1,4 +1,3 @@
-import copy
 from simple_character import *
 
 

@@ -31,30 +31,36 @@ class SimpleCharacter(Sprite):
 
     def update(self, time):
         super(SimpleCharacter, self).update(time)
-        if self.animations.animation_playing is None:
-            self.animations.play('idle')
 
-        # Friction, only on ground
-        if self.is_on_ground():
-            if self.dx > 0:
-                if not self.is_hitting and not self.is_hurt:
-                    self.animations.play('walk')
-                self.dx = max(0, self.dx - FRICTION * time)
-            elif self.dx < 0:
-                if not self.is_hitting and not self.is_hurt:
-                    self.animations.play('walk')
-                self.dx = min(0, self.dx + FRICTION * time)
-            else:
-                if not self.is_hitting and not self.is_hurt:
-                    self.animations.play('idle')
-        # Facing
-        if not self.is_hitting:
-            if self.dx > 0:
-                self.is_facing_right = True
-            elif self.dx < 0:
-                self.is_facing_right = False
+        if self.health > 0:
+            if self.animations.animation_playing is None:
+                self.animations.play('idle')
+
+            # Friction, only on ground
+            if self.is_on_ground():
+                if self.dx > 0:
+                    if not self.is_hitting and not self.is_hurt:
+                        self.animations.play('walk')
+                    self.dx = max(0, self.dx - FRICTION * time)
+                elif self.dx < 0:
+                    if not self.is_hitting and not self.is_hurt:
+                        self.animations.play('walk')
+                    self.dx = min(0, self.dx + FRICTION * time)
+                else:
+                    if not self.is_hitting and not self.is_hurt:
+                        self.animations.play('idle')
+            # Facing
+            if not self.is_hitting:
+                if self.dx > 0:
+                    self.is_facing_right = True
+                elif self.dx < 0:
+                    self.is_facing_right = False
+        else:
+            self.dx = 0
 
     def hit(self, direction):
+        if self.health <= 0:
+            return
         if self.is_hitting:
             # We are already hitting; ignore
             return
@@ -80,6 +86,10 @@ class SimpleCharacter(Sprite):
         self.animations.animation_playing.on_complete = [(after_hit, self)]
 
     def move(self, dx):
+        # Can't move when dead
+        if self.health <= 0:
+            return
+
         # Can't move when attacking and on ground
         if self.is_hitting and self.is_on_ground():
             return
@@ -104,7 +114,7 @@ class SimpleCharacter(Sprite):
             def after_hurt(s):
                 s.is_hurt = False
             self.animations.animation_playing.on_complete = [(after_hurt, self)]
-        else:
+        elif not self.is_dying:
             # Dead
             random.choice(self.sounds['deaths']).play()
 
