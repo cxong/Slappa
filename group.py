@@ -13,3 +13,6 @@ class Group(object):
     def __iter__(self):
         for child in self.children:
             yield child
+
+    def __getitem__(self, item):
+        return self.children[item]
