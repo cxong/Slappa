@@ -20,6 +20,18 @@ class PlayerHurtBox(Sprite):
 class Player(SimpleCharacter):
     def __init__(self, x, y, key, hurt_boxes):
         super(Player, self).__init__(x, y, key, (64, 64))
+
+        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
+        self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
+        self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
+        self.animations.animations['hit'] = Animation(
+            [144, 145, 146, 147, 148, 149, 149, 149, 149, 149, 149, 149, 150, 150, 150, 150], 1)
+        self.animations.animations['hit_up'] = Animation(
+            [128, 129, 130, 131, 132, 132, 133, 133, 134, 134, 135, 136, 137, 138, 139, 140], 1)
+        self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
+        self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 7)
+
+        self.hit_duration = 5
         if key == 'cat':
             self.init_cat()
         elif key == 'dog':
@@ -29,14 +41,6 @@ class Player(SimpleCharacter):
         self.body.y = -25
         self.body.width = self.width * 0.05
         self.body.height = self.height * 0.05
-
-        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
-        self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
-        self.animations.animations['jump'] = Animation([33, 34, 35, 34, 35, 34, 35, 36, 37], 5)
-        self.animations.animations['hit'] = Animation([144, 145, 146, 147, 148, 149, 149, 149, 149, 149, 149, 149, 150, 150, 150, 150], 1)
-        self.animations.animations['hit_up'] = Animation([128, 129, 130, 131, 132, 132, 133, 133, 134, 134, 135, 136, 137, 138, 139, 140], 1)
-        self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
-        self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 7)
 
         self.health = 5
         self.out_of_bounds_kill = False
@@ -52,7 +56,6 @@ class Player(SimpleCharacter):
         self.max_speed = 0.22
         self.gravity = 0.00198
         self.jump_force = 0.7
-        self.hit_duration = 5
 
         self.sounds['hurts'] = [assets.sounds['meow']]
         self.sounds['deaths'] = [assets.sounds['meow']]
@@ -62,16 +65,16 @@ class Player(SimpleCharacter):
         self.animations.animations['walk'].duration = 3
         self.animations.animations['jump'].duration = 7
         self.animations.animations['hit'] = Animation(
-            [144, 145, 146, 147, 148, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 150, 150, 150], 1)
+            [144, 145, 146, 147, 148, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 150, 150, 150], 1)
         self.animations.animations['hit_up'] = Animation(
-            [128, 129, 130, 131, 132, 132, 133, 133, 133, 134, 134, 134, 135, 135, 136, 137, 138, 139, 140], 1)
+            [128, 129, 130, 131, 132, 132, 133, 133, 133, 133, 134, 134, 134, 134, 135, 135, 135, 136, 137, 138, 139, 140], 1)
 
         self.speed = 0.25
         self.max_speed = 0.18
         self.gravity = 0.0013
         self.jump_force = 0.6
         self.friction = 0.0005
-        self.hit_duration = 10
+        self.hit_duration = 12
 
         self.sounds['hurts'] = [assets.sounds['yelp']]
         self.sounds['deaths'] = [assets.sounds['yelp']]

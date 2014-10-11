@@ -3,7 +3,7 @@ import pygame
 
 class Animation(object):
     def __init__(self, frames, duration=1, loop=False):
-        self.frames = frames
+        self.frames = frames[:]
         self.duration = duration
         self.loop = loop
         self.is_playing = False

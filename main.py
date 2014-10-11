@@ -5,70 +5,64 @@ from group import *
 from keyboard import *
 from player import *
 from sprite import *
+from state import *
 
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 pygame.display.set_caption("Slappa!")
 screen = pygame.display.set_mode(SCREEN_SIZE)
-clock = pygame.time.Clock()
 
 # Input devices
 keys = Keyboard()
 
 
-# Sounds
-pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
-assets.sounds['hits'] = load_sounds_from_folder("hits")
-assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
-assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
-assets.sounds['swings'] = load_sounds_from_folder("swings")
-assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
-assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
-assets.sounds['growls'] = load_sounds_from_folder("growls")
-assets.sounds['deaths'] = load_sounds_from_folder("deaths")
-
 # Game state
-FRAME_RATE = 60
-screenBuf = pygame.Surface(SCREEN_SIZE)
 score = 0
 bubbles = Group()
 enemies = Group()
 thing_group = Group()
 hurt_boxes = Group()
-
-# Images/templates
-imageBackground = pygame.image.load("images/bg.png")
-assets.images['explosion'] = pygame.image.load("images/explosion.png")
-assets.images['cat'] = pygame.image.load("images/players/cat.png")
-assets.images['dog'] = pygame.image.load("images/players/dog.png")
 players = Group()
-players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'dog', hurt_boxes))
 enemy_generator = EnemyGenerator(enemies, players, thing_group)
-assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
-assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
-assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
-
-# Other
+imageBackground = pygame.image.load("images/bg.png")
 font = pygame.font.Font("MedievalSharp.ttf", 32)
+state = State()
 
 
-# Game loop
-clock.tick()
-pygame.mixer.music.play(-1)
-while True:
-    is_quit = False
-    # Events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            is_quit = True
+def preload():
+    # Sounds
+    pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
+    assets.sounds['hits'] = load_sounds_from_folder("hits")
+    assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
+    assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
+    assets.sounds['swings'] = load_sounds_from_folder("swings")
+    assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
+    assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
+    assets.sounds['growls'] = load_sounds_from_folder("growls")
+    assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 
+    # Images/templates
+    assets.images['explosion'] = pygame.image.load("images/explosion.png")
+    assets.images['cat'] = pygame.image.load("images/players/cat.png")
+    assets.images['dog'] = pygame.image.load("images/players/dog.png")
+    assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
+    assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
+    assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
+state.preload = preload
+
+
+def create():
+    players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'dog', hurt_boxes))
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.7)
+state.create = create
+
+
+def update(state, time):
     # Keys
     keys.update()
     if keys.is_escape():
-        is_quit = True
-
-    if is_quit:
-        break
+        state.is_quit = True
 
     #Update
     for player in players:
@@ -76,15 +70,15 @@ while True:
         player.move(keys.dir())
         if keys.is_jump():
             player.jump()
-        player.update(clock.get_time())
+        player.update(time)
 
     # remove dead enemies
-    enemy_generator.update(clock.get_time())
-    enemies.update(clock.get_time())
+    enemy_generator.update(time)
+    enemies.update(time)
     # remove out of bounds things
-    thing_group.update(clock.get_time())
-    hurt_boxes.update(clock.get_time())
-    bubbles.update(clock.get_time())
+    thing_group.update(time)
+    hurt_boxes.update(time)
+    bubbles.update(time)
 
     # Collisions
     def hit(x, y):
@@ -124,32 +118,33 @@ while True:
                 t.health = 0
                 hit((p.x + t.x) / 2, (p.y + t.y) / 2)
     physics.overlap(players, thing_group, player_get_hit)
+state.update = update
 
+
+def draw(surface):
     #Render
-    screenBuf.fill((255, 255, 255))
-    screenBuf.blit(imageBackground, (0, 0))
+    surface.fill((255, 255, 255))
+    surface.blit(imageBackground, (0, 0))
     for enemy in enemies:
-        enemy.draw(screenBuf)
+        enemy.draw(surface)
     for player in players:
-        player.draw(screenBuf)
+        player.draw(surface)
     for thing in thing_group:
-        thing.draw(screenBuf)
+        thing.draw(surface)
     for box in hurt_boxes:
-        box.draw(screenBuf)
+        box.draw(surface)
     for bubble in bubbles:
-        bubble.draw(screenBuf)
-    screenBuf.blit(font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
-    screenBuf.blit(font.render("Score: " + str(score), True, (0, 255, 0)), (500, 50))
-    screenBuf.blit(font.render("WAD: punch", True, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
-    screenBuf.blit(font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))
-    screenBuf.blit(font.render("x %f y %f" % (player.x, player.y), True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 100))
+        bubble.draw(surface)
+    surface.blit(font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
+    surface.blit(font.render("Score: " + str(score), True, (0, 255, 0)), (500, 50))
+    surface.blit(font.render("WAD: punch", True, (0, 0, 0)), (50, SCREEN_SIZE[1] - 50))
+    surface.blit(font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))
     if player.health <= 0:
-        screenBuf.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
-    screen.blit(screenBuf, (0, 0))
+        surface.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
+    screen.blit(surface, (0, 0))
+state.draw = draw
 
-    #Loop
-    pygame.display.flip()
-    clock.tick(FRAME_RATE)
+state.start()
 
 pygame.mixer.quit()
 pygame.quit()

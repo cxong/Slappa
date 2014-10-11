@@ -43,7 +43,7 @@ class SimpleCharacter(Sprite):
                 self.animations.play('idle')
 
             # Friction, only on ground
-            if self.is_on_ground():
+            if self.is_on_ground() or self.gravity == 0.0:
                 if self.dx > 0:
                     if not self.is_hitting and not self.is_hurt:
                         self.animations.play('walk')
