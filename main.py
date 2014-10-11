@@ -102,9 +102,9 @@ while True:
 
     def enemy_hurt(e, h):
         if not h.has_hit_monster:
-            e.hurt()
-            hit((e.x + h.x) / 2, (e.y + h.y) / 2)
-            h.has_hit_monster = True
+            if e.hurt():
+                hit((e.x + h.x) / 2, (e.y + h.y) / 2)
+                h.has_hit_monster = True
     physics.overlap(enemies, hurt_boxes, enemy_hurt)
 
     # things get hit and become players'
@@ -116,16 +116,16 @@ while True:
 
     def enemy_get_hit(e, t):
         if not t.is_enemy:
-            e.hurt()
-            t.health = 0
-            hit((e.x + t.x) / 2, (e.y + t.y) / 2)
+            if e.hurt():
+                t.health = 0
+                hit((e.x + t.x) / 2, (e.y + t.y) / 2)
     physics.overlap(enemies, thing_group, enemy_get_hit)
 
     def player_get_hit(p, t):
         if t.is_enemy:
-            p.hurt()
-            t.health = 0
-            hit((p.x + t.x) / 2, (p.y + t.y) / 2)
+            if p.hurt():
+                t.health = 0
+                hit((p.x + t.x) / 2, (p.y + t.y) / 2)
     physics.overlap(players, thing_group, player_get_hit)
 
     #Render

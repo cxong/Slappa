@@ -103,6 +103,9 @@ class SimpleCharacter(Sprite):
         return self.is_dying or super(SimpleCharacter, self).exists()
 
     def hurt(self):
+        if self.health <= 0:
+            return False
+
         self.health -= 1
 
         if self.health > 0:
@@ -118,11 +121,15 @@ class SimpleCharacter(Sprite):
             # Dead
             random.choice(self.sounds['deaths']).play()
 
+            self.is_dying = True
+
             self.animations.play('die')
 
             def after_die(s):
                 s.is_dying = False
             self.animations.animation_playing.on_complete = [(after_die, self)]
+
+        return True
 
     def draw(self, surface):
         # Directional flip

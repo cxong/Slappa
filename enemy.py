@@ -17,7 +17,7 @@ class Enemy(SimpleCharacter):
         self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
         self.animations.animations['hit'] = Animation([16, 17, 18, 19, 20, 21], 4)
         self.animations.animations['hurt'] = Animation([25, 26], 20)
-        self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 20)
+        self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 3)
 
         self.health = 2
         self.speed = Enemy.SPEED
