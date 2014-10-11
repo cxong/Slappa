@@ -2,6 +2,18 @@ import pygame
 from config import *
 
 
+class StateManager(object):
+    def __init__(self, screen):
+        self.states = {}
+        self.screen = screen
+
+    def add(self, key, state):
+        self.states[key] = state
+
+    def start(self, key):
+        self.states[key].start(self.screen)
+
+
 class State(object):
     def __init__(self):
         self.preload = None
@@ -10,7 +22,7 @@ class State(object):
         self.draw = None
         self.is_quit = False
 
-    def start(self):
+    def start(self, screen):
         screenBuf = pygame.Surface(SCREEN_SIZE)
         if self.preload is not None:
             self.preload()
@@ -27,5 +39,6 @@ class State(object):
                 self.update(self, clock.get_time())
             if self.draw is not None:
                 self.draw(screenBuf)
+                screen.blit(screenBuf, (0, 0))
                 pygame.display.flip()
             clock.tick(FRAME_RATE)

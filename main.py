@@ -1,16 +1,14 @@
 import physics
 from bubble import *
 from enemy_generator import *
+from game import *
 from group import *
 from keyboard import *
 from player import *
 from sprite import *
 from state import *
 
-pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
-pygame.init()
-pygame.display.set_caption("Slappa!")
-screen = pygame.display.set_mode(SCREEN_SIZE)
+game = Game("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
 
 # Input devices
 keys = Keyboard()
@@ -141,10 +139,7 @@ def draw(surface):
     surface.blit(font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))
     if player.health <= 0:
         surface.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
-    screen.blit(surface, (0, 0))
 state.draw = draw
 
-state.start()
-
-pygame.mixer.quit()
-pygame.quit()
+game.state.add('game', state)
+game.state.start('game')
