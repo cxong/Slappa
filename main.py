@@ -38,7 +38,7 @@ hurt_boxes = Group()
 # Images/templates
 imageBackground = pygame.image.load("images/bg.png")
 assets.images['explosion'] = pygame.image.load("images/explosion.png")
-assets.images['cat'] = pygame.image.load("images/players/cat.png")
+assets.images['cat'] = pygame.image.load("images/players/dog.png")
 players = Group()
 players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
 enemy_generator = EnemyGenerator(enemies, players, thing_group)

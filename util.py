@@ -12,7 +12,9 @@ def load_from_path(path, load):
         for file_name in file_names:
             if file_name.endswith(".txt"):
                 continue
-            assets.append(load(os.path.join(dir_name, file_name)))
+            o = load(os.path.join(dir_name, file_name))
+            if o is not None:
+                assets.append(o)
     return assets
 
 
@@ -25,6 +27,9 @@ def load_sounds_from_folder(folder):
 def load_things_from_folder(folder):
     def load_thing(path):
         name = path[path.rfind("/") + 1:]
-        assets.images[name] = pygame.image.load(path)
+        try:
+            assets.images[name] = pygame.image.load(path)
+        except pygame.error:
+            return None
         return name
     return load_from_path("images/" + folder, load_thing)
