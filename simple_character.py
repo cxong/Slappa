@@ -25,6 +25,7 @@ class SimpleCharacter(Sprite):
         self.speed = 0.1
         self.max_speed = 0.05
         self.jump_force = 0.0
+        self.friction = 0.002
 
         self.sounds = {
             'swings': [],
@@ -46,11 +47,11 @@ class SimpleCharacter(Sprite):
                 if self.dx > 0:
                     if not self.is_hitting and not self.is_hurt:
                         self.animations.play('walk')
-                    self.dx = max(0, self.dx - FRICTION * time)
+                    self.dx = max(0, self.dx - self.friction * time)
                 elif self.dx < 0:
                     if not self.is_hitting and not self.is_hurt:
                         self.animations.play('walk')
-                    self.dx = min(0, self.dx + FRICTION * time)
+                    self.dx = min(0, self.dx + self.friction * time)
                 else:
                     if not self.is_hitting and not self.is_hurt:
                         self.animations.play('idle')

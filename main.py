@@ -23,6 +23,7 @@ assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
 assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
 assets.sounds['swings'] = load_sounds_from_folder("swings")
 assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
+assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
 assets.sounds['growls'] = load_sounds_from_folder("growls")
 assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 
@@ -38,9 +39,10 @@ hurt_boxes = Group()
 # Images/templates
 imageBackground = pygame.image.load("images/bg.png")
 assets.images['explosion'] = pygame.image.load("images/explosion.png")
-assets.images['cat'] = pygame.image.load("images/players/dog.png")
+assets.images['cat'] = pygame.image.load("images/players/cat.png")
+assets.images['dog'] = pygame.image.load("images/players/dog.png")
 players = Group()
-players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
+players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'dog', hurt_boxes))
 enemy_generator = EnemyGenerator(enemies, players, thing_group)
 assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
 assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
@@ -108,7 +110,7 @@ while True:
     physics.overlap(thing_group, hurt_boxes, things_hit)
 
     def enemy_get_hit(e, t):
-        if not t.is_enemy:
+        if not t.is_enemy and t.health > 0:
             if e.hurt():
                 t.health = 0
                 hit((e.x + t.x) / 2, (e.y + t.y) / 2)

@@ -7,7 +7,7 @@ class PlayerHurtBox(Sprite):
         super(PlayerHurtBox, self).__init__(x, y, '')
         self.body.width = dimensions[0]
         self.body.height = dimensions[1]
-        self.count = 5
+        self.count = player.hit_duration
         self.has_hit_monster = False
         self.player = player
 
@@ -18,13 +18,12 @@ class PlayerHurtBox(Sprite):
 
 
 class Player(SimpleCharacter):
-    GRAVITY = 0.00198
-    SPEED = 0.3
-    MAX_SPEED = 0.2
-    JUMP_FORCE = 0.7
-
-    def __init__(self, x, y, key, dimensions, hurt_boxes):
-        super(Player, self).__init__(x, y, key, dimensions)
+    def __init__(self, x, y, key, hurt_boxes):
+        super(Player, self).__init__(x, y, key, (64, 64))
+        if key == 'cat':
+            self.init_cat()
+        elif key == 'dog':
+            self.init_dog()
 
         self.anchor.y = 0.84
         self.body.y = -25
@@ -39,22 +38,43 @@ class Player(SimpleCharacter):
         self.animations.animations['hurt'] = Animation([65, 66, 65], 5)
         self.animations.animations['die'] = Animation([65, 66, 67, 68, 69, 70], 7)
 
-        self.speed = Player.SPEED
-        self.max_speed = Player.MAX_SPEED
         self.health = 5
         self.out_of_bounds_kill = False
-        self.gravity = Player.GRAVITY
-        self.jump_force = Player.JUMP_FORCE
 
-        self.sounds = {
-            'jump': assets.sounds['jump'],
-            'land': assets.sounds['land'],
-            'swings': assets.sounds['swings'],
-            'hurts': [assets.sounds['meow']],
-            'deaths': [assets.sounds['meow']]
-        }
+        self.sounds['jump'] = assets.sounds['jump']
+        self.sounds['land'] = assets.sounds['land']
+        self.sounds['swings'] = assets.sounds['swings']
 
         self.hurt_boxes = hurt_boxes
+
+    def init_cat(self):
+        self.speed = 0.3
+        self.max_speed = 0.22
+        self.gravity = 0.00198
+        self.jump_force = 0.7
+        self.hit_duration = 5
+
+        self.sounds['hurts'] = [assets.sounds['meow']]
+        self.sounds['deaths'] = [assets.sounds['meow']]
+
+    def init_dog(self):
+        self.animations.animations['idle'].duration = 6
+        self.animations.animations['walk'].duration = 3
+        self.animations.animations['jump'].duration = 7
+        self.animations.animations['hit'] = Animation(
+            [144, 145, 146, 147, 148, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 150, 150, 150], 1)
+        self.animations.animations['hit_up'] = Animation(
+            [128, 129, 130, 131, 132, 132, 133, 133, 133, 134, 134, 134, 135, 135, 136, 137, 138, 139, 140], 1)
+
+        self.speed = 0.25
+        self.max_speed = 0.18
+        self.gravity = 0.0013
+        self.jump_force = 0.6
+        self.friction = 0.0005
+        self.hit_duration = 10
+
+        self.sounds['hurts'] = [assets.sounds['yelp']]
+        self.sounds['deaths'] = [assets.sounds['yelp']]
 
     def update(self, time):
         super(Player, self).update(time)

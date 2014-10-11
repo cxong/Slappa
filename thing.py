@@ -10,13 +10,14 @@ class Thing(Sprite):
 
         self.allow_rotations = True
         self.rotation = random.randint(0, 360)
-        self.angular_velocity = random.uniform(-2, 2)
+        self.angular_velocity = random.uniform(-1, 1)
         scaled = Point(target.x - self.x,
                        target.y - self.y).set_magnitude(Thing.SPEED)
         self.dx, self.dy = scaled.x, scaled.y
         self.is_enemy = True
 
     def hit(self, player, enemies):
+        self.angular_velocity = random.uniform(-2, 2)
         d = Point(self.x - (player.x + player.body.x),
                   self.y - (player.y + player.body.y)).normalize()
         # find enemies within arc of deflection

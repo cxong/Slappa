@@ -13,7 +13,7 @@ class Animation(object):
         self.sub_counter = 0
 
     def reset(self):
-        self.counter = 0
+        self.counter = -1
         self.sub_counter = 0
 
     def play(self):
