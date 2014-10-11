@@ -66,6 +66,13 @@ class Enemy(SimpleCharacter):
                 # Don't do same thing twice
                 if self.action == new_action:
                     continue
+                # Try to move towards center of screen
+                if (new_action == 'move_left' and
+                        self.x < SCREEN_SIZE[0] / 4):
+                    continue
+                if (new_action == 'move_right' and
+                        self.x > SCREEN_SIZE[0] * 3 / 4):
+                    continue
                 self.action = new_action
                 break
 

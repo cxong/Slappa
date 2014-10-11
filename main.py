@@ -1,6 +1,6 @@
 import physics
 from bubble import *
-from enemy import *
+from enemy_generator import *
 from group import *
 from keyboard import *
 from player import *
@@ -41,23 +41,12 @@ assets.images['explosion'] = pygame.image.load("images/explosion.png")
 assets.images['cat'] = pygame.image.load("images/players/cat.png")
 players = Group()
 players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y, 'cat', (64, 64), hurt_boxes))
-thing_keys = load_things_from_folder("things")
+enemy_generator = EnemyGenerator(enemies, players, thing_group)
 assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
 
 # Other
 font = pygame.font.Font("MedievalSharp.ttf", 32)
 
-
-def add_enemy(x, y):
-    enemies.add(Enemy(x, y,
-                      'monster',
-                      (64, 64),
-                      players,
-                      thing_keys,
-                      thing_group))
-add_enemy(100, FLOOR_Y)
-add_enemy(170, FLOOR_Y)
-add_enemy(250, FLOOR_Y)
 
 # Game loop
 clock.tick()
@@ -87,9 +76,7 @@ while True:
 
     # remove dead enemies
     enemies.update(clock.get_time())
-    # TODO: add enemies periodically
-    if len(enemies.children) < 10:
-        add_enemy(random.randint(0, SCREEN_SIZE[0]), FLOOR_Y)
+    enemy_generator.update(clock.get_time())
     # remove out of bounds things
     thing_group.update(clock.get_time())
     hurt_boxes.update(clock.get_time())
@@ -147,7 +134,7 @@ while True:
     screenBuf.blit(font.render("Arrows: move", True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 50))
     screenBuf.blit(font.render("x %f y %f" % (player.x, player.y), True, (0, 0, 0)), (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] - 100))
     if player.health <= 0:
-        screenBuf.blit(font.render("YOU LOSE", True, (0, 0, 0)), (200, 200))
+        screenBuf.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
     screen.blit(screenBuf, (0, 0))
 
     #Loop
