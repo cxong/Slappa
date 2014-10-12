@@ -9,9 +9,11 @@ class Keyboard:
         self.keys = pygame.key.get_pressed()
 
     def is_escape(self):
-        return self.keys[pygame.K_ESCAPE]
+        return self.keys is not None and self.keys[pygame.K_ESCAPE]
 
     def dir(self):
+        if self.keys is None:
+            return 0
         if self.keys[pygame.K_LEFT]:
             return -1
         elif self.keys[pygame.K_RIGHT]:
@@ -19,9 +21,11 @@ class Keyboard:
         return 0
 
     def is_jump(self):
-        return self.keys[pygame.K_UP]
+        return self.keys is not None and self.keys[pygame.K_UP]
 
     def hit(self):
+        if self.keys is None:
+            return ""
         if self.keys[pygame.K_a]:
             return "left"
         elif self.keys[pygame.K_d]:

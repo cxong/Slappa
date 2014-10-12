@@ -7,6 +7,7 @@ class StateManager(object):
         self.states = {}
         self.screen = screen
         self.game = game
+        self.active_state = None
 
     def add(self, key, state):
         self.states[key] = state
@@ -14,7 +15,10 @@ class StateManager(object):
         state.game = self.game
 
     def start(self, key):
-        self.states[key].start(self.screen)
+        if self.active_state is not None:
+            self.active_state.is_quit = True
+        self.active_state = self.states[key]
+        self.active_state.start(self.screen)
 
 
 class State(object):
@@ -28,6 +32,7 @@ class State(object):
         self.game = None
 
     def start(self, screen):
+        self.is_quit = False
         screenBuf = pygame.Surface(SCREEN_SIZE)
         if self.preload is not None:
             self.preload()

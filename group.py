@@ -16,3 +16,6 @@ class Group(object):
 
     def __getitem__(self, item):
         return self.children[item]
+
+    def __len__(self):
+        return len(self.children)

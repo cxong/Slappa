@@ -3,6 +3,7 @@ from bubble import *
 from enemy_generator import *
 from game import *
 from group import *
+from joystick import *
 from keyboard import *
 from player import *
 from sprite import *
@@ -12,12 +13,16 @@ game = Game("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
 
 # Input devices
 keys = Keyboard()
+joys = Joystick()
 
 
 # Title screen
 class TitleState(State):
     def __init__(self):
         super(TitleState, self).__init__()
+        # Don't detect input for a bit
+        # To prevent capturing escape from game screen
+        self.grace_timer = 30
 
         def preload():
             pygame.mixer.music.load("sounds/asian strings.mp3")
@@ -25,6 +30,7 @@ class TitleState(State):
             assets.images['logo'] = pygame.image.load("images/logo.png")
             assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
             assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
+            self.grace_timer = 30
         self.preload = preload
 
         def create():
@@ -33,18 +39,17 @@ class TitleState(State):
         self.create = create
 
         def update(time):
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_ESCAPE]:
-                self.is_quit = True
+            self.grace_timer -= 1
+            if self.grace_timer <= 0:
+                keys.update()
+                if keys.is_escape():
+                    self.is_quit = True
+                joys.update()
 
             # Detect input and add player
             # TODO: choose different chars
-            if (keys[pygame.K_LEFT] or
-                    keys[pygame.K_RIGHT] or
-                    keys[pygame.K_UP] or
-                    keys[pygame.K_a] or
-                    keys[pygame.K_d] or
-                    keys[pygame.K_w]):
+            if (keys.dir() != 0 or keys.is_jump() or keys.hit() != "" or
+                    joys.dir() != 0 or joys.is_jump() or joys.hit() != ""):
                 self.state.start('game')
         self.update = update
 
@@ -75,13 +80,12 @@ class GameState(State):
     def __init__(self):
         super(GameState, self).__init__()
         self.score = 0
-        self.bubbles = Group()
-        self.enemies = Group()
-        self.thing_group = Group()
-        self.hurt_boxes = Group()
-        self.players = Group()
-        self.enemy_generator = EnemyGenerator(
-            self.enemies, self.players, self.thing_group)
+        self.bubbles = None
+        self.enemies = None
+        self.thing_group = None
+        self.hurt_boxes = None
+        self.players = None
+        self.enemy_generator = None
 
         def preload():
             # Sounds
@@ -105,7 +109,19 @@ class GameState(State):
         self.preload = preload
 
         def create():
-            self.players.add(Player(SCREEN_SIZE[0] / 2, FLOOR_Y,
+            self.score = 0
+            self.bubbles = Group()
+            self.enemies = Group()
+            self.thing_group = Group()
+            self.hurt_boxes = Group()
+            self.players = Group()
+            self.enemy_generator = EnemyGenerator(
+                self.enemies, self.players, self.thing_group)
+
+            self.players.add(Player(SCREEN_SIZE[0] / 2 - 48, FLOOR_Y,
+                                    'cat',
+                                    self.hurt_boxes))
+            self.players.add(Player(SCREEN_SIZE[0] / 2 + 48, FLOOR_Y,
                                     'dog',
                                     self.hurt_boxes))
             pygame.mixer.music.play(-1)
@@ -116,14 +132,23 @@ class GameState(State):
             # Keys
             keys.update()
             if keys.is_escape():
-                self.is_quit = True
+                self.state.start('title')
+                return
+            joys.update()
 
             #Update
-            for player in self.players:
-                player.hit(keys.hit())
-                player.move(keys.dir())
-                if keys.is_jump():
-                    player.jump()
+            for i in range(len(self.players)):
+                player = self.players[i]
+                if i == 0:
+                    player.hit(keys.hit())
+                    player.move(keys.dir())
+                    if keys.is_jump():
+                        player.jump()
+                elif i == 1:
+                    player.hit(joys.hit())
+                    player.move(joys.dir())
+                    if joys.is_jump():
+                        player.jump()
                 player.update(time)
 
             # remove dead enemies
