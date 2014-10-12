@@ -23,6 +23,8 @@ class TitleState(State):
         assets.images['background'] = pygame.image.load("images/bg.png")
         assets.images['logo'] = pygame.image.load("images/logo.png")
         assets.images['gong'] = pygame.image.load("images/gong.png")
+        assets.images['keyboard'] = pygame.image.load("images/keyboard.png")
+        assets.images['xbox360'] = pygame.image.load("images/xbox360.png")
         assets.sounds['gong'] = pygame.mixer.Sound("sounds/gong.ogg")
         assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
         assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
@@ -101,23 +103,22 @@ class TitleState(State):
 
         def draw(surface):
             surface.blit(assets.images['background'], (0, 0))
-            logo = assets.images['logo']
-            surface.blit(logo, ((self.game.width - logo.get_width()) / 2,
-                                (self.game.height - logo.get_height()) / 2))
+            s = assets.images['logo']
+            surface.blit(s, ((self.game.width - s.get_width()) / 2,
+                             (self.game.height - s.get_height()) / 2))
             font = assets.fonts['big']
             surface.blit(font.render("Slappa!",
                                      True,
                                      (255, 140, 160)),
                          (280, self.game.height / 2))
             font = assets.fonts['font']
-            surface.blit(font.render("WAD: punch",
-                                     True,
-                                     (0, 0, 0)),
-                         (50, self.game.height - 100))
-            surface.blit(font.render("Arrows: move",
-                                     True,
-                                     (0, 0, 0)),
-                         (50, self.game.height - 50))
+            s = assets.images['keyboard']
+            padding = 25
+            surface.blit(s, ((padding,
+                             (self.game.height - s.get_height() - padding))))
+            s = assets.images['xbox360']
+            surface.blit(s, (self.game.width - s.get_width() - padding,
+                             self.game.height - s.get_height() - padding))
             self.gong.draw(surface)
             for player in self.players:
                 player.draw(surface)
@@ -262,13 +263,28 @@ class GameState(State):
                 box.draw(surface)
             for bubble in self.bubbles:
                 bubble.draw(surface)
-            # TODO: multiple players and HUD
-            player = self.players[0]
             font = assets.fonts['font']
-            surface.blit(font.render("HP: " + str(player.health), True, (255, 128, 64)), (50, 50))
-            surface.blit(font.render("Score: " + str(self.score), True, (0, 255, 0)), (500, 50))
-            if player.health <= 0:
-                surface.blit(font.render("YOU LOSE", True, (255, 255, 255)), (300, 200))
+            padding = 25
+            players_alive = 0
+            for i in range(len(self.players)):
+                player = self.players[i]
+                x = padding
+                if i == 1:
+                    x = self.game.width - 100 - padding
+                surface.blit(font.render("HP: " + str(player.health),
+                                         True,
+                                         (0, 255, 0)),
+                             (x, self.game.height - 25 - padding))
+                if player.health > 0:
+                    players_alive += 1
+            surface.blit(font.render("Score: " + str(self.score),
+                                     True,
+                                     (255, 255, 0)),
+                         (self.game.width / 2 - 100, 50))
+            if players_alive == 0:
+                font = assets.fonts['big']
+                surface.blit(font.render("YOU LOSE", True, (255, 255, 255)),
+                             (self.game.width / 2 - 150, self.game.height / 2 - 50))
         self.draw = draw
 
 game.state.add('game', GameState())
