@@ -47,11 +47,11 @@ class Joystick(object):
                 axis = self.joystick.get_axis(i)
                 if abs(axis) > 0.3:
                     if (i % 2) == 0:
-                        if self.dir == 0:
+                        if self._dir == 0:
                             self._dir = axis / abs(axis)
                     elif (i % 2) == 1:
                         if not self._is_jump:
-                            self._is_jump = axis > 0
+                            self._is_jump = axis < 0
             # Buttons
             if self.joystick.get_button(1) == 1:
                 self._hit = "right"
