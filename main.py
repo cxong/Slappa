@@ -41,7 +41,7 @@ class TitleState(State):
         self.gong = None
 
         def preload():
-            pygame.mixer.music.load("data/sounds/asian strings.mp3")
+            pygame.mixer.music.load("data/sounds/asian strings.ogg")
             self.grace_timer = 30
         self.preload = preload
 
@@ -163,7 +163,7 @@ class GameState(State):
         assets.images['flying'] = pygame.image.load("data/images/enemies/flying.png")
 
         def create():
-            pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.mp3")
+            pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.ogg")
             self.score = 0
             self.bubbles = Group()
             self.enemies = Group()
