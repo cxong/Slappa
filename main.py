@@ -9,28 +9,29 @@ from player import *
 from sprite import *
 from state import *
 
-game = Game("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
 
-# Input devices
-keys = Keyboard()
-joys = Joystick()
+class SlappaGame(Game):
+    def __init__(self):
+        super(SlappaGame, self).__init__("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
+        self.players_joined = [False, False]
 
-# Remember which players have joined
-players_joined = [False, False]
+        # Input devices
+        self.keys = Keyboard()
+        self.joys = Joystick()
 
 
 # Title screen
 class TitleState(State):
     def __init__(self):
         super(TitleState, self).__init__()
-        assets.images['background'] = pygame.image.load("images/bg.png")
-        assets.images['logo'] = pygame.image.load("images/logo.png")
-        assets.images['gong'] = pygame.image.load("images/gong.png")
-        assets.images['keyboard'] = pygame.image.load("images/keyboard.png")
-        assets.images['xbox360'] = pygame.image.load("images/xbox360.png")
-        assets.sounds['gong'] = pygame.mixer.Sound("sounds/gong.ogg")
-        assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
-        assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
+        assets.images['background'] = pygame.image.load("data/images/bg.png")
+        assets.images['logo'] = pygame.image.load("data/images/logo.png")
+        assets.images['gong'] = pygame.image.load("data/images/gong.png")
+        assets.images['keyboard'] = pygame.image.load("data/images/keyboard.png")
+        assets.images['xbox360'] = pygame.image.load("data/images/xbox360.png")
+        assets.sounds['gong'] = pygame.mixer.Sound("data/sounds/gong.ogg")
+        assets.fonts['font'] = pygame.font.Font("data/MedievalSharp.ttf", 32)
+        assets.fonts['big'] = pygame.font.Font("data/MedievalSharp.ttf", 72)
         # Don't detect input for a bit
         # To prevent capturing escape from game screen
         self.grace_timer = 30
@@ -40,7 +41,7 @@ class TitleState(State):
         self.gong = None
 
         def preload():
-            pygame.mixer.music.load("sounds/asian strings.mp3")
+            pygame.mixer.music.load("data/sounds/asian strings.mp3")
             self.grace_timer = 30
         self.preload = preload
 
@@ -60,8 +61,7 @@ class TitleState(State):
                 player.health = 0
                 player.is_dying = True
                 player.animations.play('die')
-            global players_joined
-            players_joined = [False, False]
+            self.game.players_joined = [False, False]
             self.gong = Sprite(self.game.width / 2, FLOOR_Y, 'gong', Point(2, 2))
             self.gong.anchor.y = 1
         self.create = create
@@ -69,32 +69,30 @@ class TitleState(State):
         def update(time):
             self.grace_timer -= 1
             if self.grace_timer <= 0:
-                keys.update()
-                if keys.is_escape():
+                self.game.keys.update()
+                if self.game.keys.is_escape():
                     self.is_quit = True
-                joys.update()
+                self.game.joys.update()
 
             # Detect input and add player
-            if keys.dir() != 0 or keys.is_jump() or keys.hit() != "":
+            if self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "":
                 self.players[0].health = 5
-                global players_joined
-                players_joined[0] = True
-            if joys.dir() != 0 or joys.is_jump() or joys.hit() != "":
+                self.game.players_joined[0] = True
+            if self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "":
                 self.players[1].health = 5
-                global players_joined
-                players_joined[1] = True
+                self.game.players_joined[1] = True
 
             for i in range(len(self.players)):
                 player = self.players[i]
                 if i == 0:
-                    player.hit(keys.hit())
-                    player.move(keys.dir())
-                    if keys.is_jump():
+                    player.hit(self.game.keys.hit())
+                    player.move(self.game.keys.dir())
+                    if self.game.keys.is_jump():
                         player.jump()
                 elif i == 1:
-                    player.hit(joys.hit())
-                    player.move(joys.dir())
-                    if joys.is_jump():
+                    player.hit(self.game.joys.hit())
+                    player.move(self.game.joys.dir())
+                    if self.game.joys.is_jump():
                         player.jump()
                 player.update(time)
             self.hurt_boxes.update(time)
@@ -147,25 +145,25 @@ class GameState(State):
         self.enemy_generator = None
         # Sounds
         assets.sounds['hits'] = load_sounds_from_folder("hits")
-        assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
-        assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
+        assets.sounds['jump'] = pygame.mixer.Sound("data/sounds/jump.ogg")
+        assets.sounds['land'] = pygame.mixer.Sound("data/sounds/land.ogg")
         assets.sounds['swings'] = load_sounds_from_folder("swings")
-        assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
-        assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
+        assets.sounds['meow'] = pygame.mixer.Sound("data/sounds/meow.ogg")
+        assets.sounds['yelp'] = pygame.mixer.Sound("data/sounds/yelp.ogg")
         assets.sounds['growls'] = load_sounds_from_folder("growls")
         assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 
         # Images/templates
-        assets.images['explosion'] = pygame.image.load("images/explosion.png")
-        assets.images['cat'] = pygame.image.load("images/players/cat.png")
-        assets.images['dog'] = pygame.image.load("images/players/dog.png")
-        assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
+        assets.images['explosion'] = pygame.image.load("data/images/explosion.png")
+        assets.images['cat'] = pygame.image.load("data/images/players/cat.png")
+        assets.images['dog'] = pygame.image.load("data/images/players/dog.png")
+        assets.images['zombie'] = pygame.image.load("data/images/enemies/zombie.png")
         assets.images['monster'] = pygame.image.load(
-            "images/enemies/monster.png")
-        assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
+            "data/images/enemies/monster.png")
+        assets.images['flying'] = pygame.image.load("data/images/enemies/flying.png")
 
         def create():
-            pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
+            pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.mp3")
             self.score = 0
             self.bubbles = Group()
             self.enemies = Group()
@@ -181,12 +179,11 @@ class GameState(State):
             self.players.add(Player(SCREEN_SIZE[0] / 2 + 48, FLOOR_Y,
                                     'dog',
                                     self.hurt_boxes))
-            global players_joined
-            if not players_joined[0]:
+            if not self.game.players_joined[0]:
                 self.players[0].health = 0
                 self.players[0].is_dying = True
                 self.players[0].animations.play('die')
-            if not players_joined[1]:
+            if not self.game.players_joined[1]:
                 self.players[1].health = 0
                 self.players[1].is_dying = True
                 self.players[1].animations.play('die')
@@ -196,35 +193,34 @@ class GameState(State):
 
         def update(time):
             # Keys
-            keys.update()
-            if keys.is_escape():
+            self.game.keys.update()
+            if self.game.keys.is_escape():
                 self.state.start('title')
                 return
-            joys.update()
+            self.game.joys.update()
 
             # Detect input and add player
-            global players_joined
-            if (not players_joined[0] and
-                    (keys.dir() != 0 or keys.is_jump() or keys.hit() != "")):
+            if (not self.game.players_joined[0] and
+                    (self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "")):
                 self.players[0].health = 5
-                players_joined[0] = True
-            if (not players_joined[1] and
-                    (joys.dir() != 0 or joys.is_jump() or joys.hit() != "")):
+                self.game.players_joined[0] = True
+            if (not self.game.players_joined[1] and
+                    (self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "")):
                 self.players[1].health = 5
-                players_joined[1] = True
+                self.game.players_joined[1] = True
 
             #Update
             for i in range(len(self.players)):
                 player = self.players[i]
                 if i == 0:
-                    player.hit(keys.hit())
-                    player.move(keys.dir())
-                    if keys.is_jump():
+                    player.hit(self.game.keys.hit())
+                    player.move(self.game.keys.dir())
+                    if self.game.keys.is_jump():
                         player.jump()
                 elif i == 1:
-                    player.hit(joys.hit())
-                    player.move(joys.dir())
-                    if joys.is_jump():
+                    player.hit(self.game.joys.hit())
+                    player.move(self.game.joys.dir())
+                    if self.game.joys.is_jump():
                         player.jump()
                 player.update(time)
 
@@ -316,6 +312,13 @@ class GameState(State):
                              (self.game.width / 2 - 150, self.game.height / 2 - 50))
         self.draw = draw
 
-game.state.add('game', GameState())
-game.state.add('title', TitleState())
-game.state.start('title')
+
+def main():
+    game = SlappaGame()
+    game.state.add('game', GameState())
+    game.state.add('title', TitleState())
+    game.state.start('title')
+
+
+if __name__ == '__main__':
+    main()

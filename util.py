@@ -21,7 +21,7 @@ def load_from_path(path, load):
 def load_sounds_from_folder(folder):
     def load_sound(path):
         return pygame.mixer.Sound(path)
-    return load_from_path("sounds/" + folder, load_sound)
+    return load_from_path("data/sounds/" + folder, load_sound)
 
 
 def load_things_from_folder(folder):
@@ -32,4 +32,4 @@ def load_things_from_folder(folder):
         except pygame.error:
             return None
         return name
-    return load_from_path("images/" + folder, load_thing)
+    return load_from_path("data/images/" + folder, load_thing)
