@@ -15,6 +15,9 @@ game = Game("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
 keys = Keyboard()
 joys = Joystick()
 
+# Remember which players have joined
+players_joined = [False, False]
+
 
 # Title screen
 class TitleState(State):
@@ -57,6 +60,8 @@ class TitleState(State):
                 player.health = 0
                 player.is_dying = True
                 player.animations.play('die')
+            global players_joined
+            players_joined = [False, False]
             self.gong = Sprite(self.game.width / 2, FLOOR_Y, 'gong', Point(2, 2))
             self.gong.anchor.y = 1
         self.create = create
@@ -72,8 +77,12 @@ class TitleState(State):
             # Detect input and add player
             if keys.dir() != 0 or keys.is_jump() or keys.hit() != "":
                 self.players[0].health = 5
+                global players_joined
+                players_joined[0] = True
             if joys.dir() != 0 or joys.is_jump() or joys.hit() != "":
                 self.players[1].health = 5
+                global players_joined
+                players_joined[1] = True
 
             for i in range(len(self.players)):
                 player = self.players[i]
@@ -172,6 +181,15 @@ class GameState(State):
             self.players.add(Player(SCREEN_SIZE[0] / 2 + 48, FLOOR_Y,
                                     'dog',
                                     self.hurt_boxes))
+            global players_joined
+            if not players_joined[0]:
+                self.players[0].health = 0
+                self.players[0].is_dying = True
+                self.players[0].animations.play('die')
+            if not players_joined[1]:
+                self.players[1].health = 0
+                self.players[1].is_dying = True
+                self.players[1].animations.play('die')
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
         self.create = create
@@ -183,6 +201,17 @@ class GameState(State):
                 self.state.start('title')
                 return
             joys.update()
+
+            # Detect input and add player
+            global players_joined
+            if (not players_joined[0] and
+                    (keys.dir() != 0 or keys.is_jump() or keys.hit() != "")):
+                self.players[0].health = 5
+                players_joined[0] = True
+            if (not players_joined[1] and
+                    (joys.dir() != 0 or joys.is_jump() or joys.hit() != "")):
+                self.players[1].health = 5
+                players_joined[1] = True
 
             #Update
             for i in range(len(self.players)):

@@ -39,6 +39,7 @@ class SimpleCharacter(Sprite):
         super(SimpleCharacter, self).update(time)
 
         if self.health > 0:
+            self.is_dying = False
             if self.animations.animation_playing is None:
                 self.animations.play('idle')
 
