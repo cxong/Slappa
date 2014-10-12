@@ -1,0 +1,4 @@
+Adapted from Place your game's data files in here (images, fonts, map files, sounds,
+by xelu
+http://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
+http://creativecommons.org/publicdomain/zero/1.0/
