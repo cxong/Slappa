@@ -20,22 +20,43 @@ joys = Joystick()
 class TitleState(State):
     def __init__(self):
         super(TitleState, self).__init__()
+        assets.images['background'] = pygame.image.load("images/bg.png")
+        assets.images['logo'] = pygame.image.load("images/logo.png")
+        assets.images['gong'] = pygame.image.load("images/gong.png")
+        assets.sounds['gong'] = pygame.mixer.Sound("sounds/gong.ogg")
+        assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
+        assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
         # Don't detect input for a bit
         # To prevent capturing escape from game screen
         self.grace_timer = 30
 
+        self.hurt_boxes = None
+        self.players = None
+        self.gong = None
+
         def preload():
             pygame.mixer.music.load("sounds/asian strings.mp3")
-            assets.images['background'] = pygame.image.load("images/bg.png")
-            assets.images['logo'] = pygame.image.load("images/logo.png")
-            assets.fonts['font'] = pygame.font.Font("MedievalSharp.ttf", 32)
-            assets.fonts['big'] = pygame.font.Font("MedievalSharp.ttf", 72)
             self.grace_timer = 30
         self.preload = preload
 
         def create():
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
+            self.hurt_boxes = Group()
+            self.players = Group()
+
+            self.players.add(Player(self.game.width / 2 - 48, FLOOR_Y,
+                                    'cat',
+                                    self.hurt_boxes))
+            self.players.add(Player(self.game.width / 2 + 48, FLOOR_Y,
+                                    'dog',
+                                    self.hurt_boxes))
+            for player in self.players:
+                player.health = 0
+                player.is_dying = True
+                player.animations.play('die')
+            self.gong = Sprite(self.game.width / 2, FLOOR_Y, 'gong', Point(2, 2))
+            self.gong.anchor.y = 1
         self.create = create
 
         def update(time):
@@ -47,10 +68,35 @@ class TitleState(State):
                 joys.update()
 
             # Detect input and add player
-            # TODO: choose different chars
-            if (keys.dir() != 0 or keys.is_jump() or keys.hit() != "" or
-                    joys.dir() != 0 or joys.is_jump() or joys.hit() != ""):
+            if keys.dir() != 0 or keys.is_jump() or keys.hit() != "":
+                self.players[0].health = 5
+            if joys.dir() != 0 or joys.is_jump() or joys.hit() != "":
+                self.players[1].health = 5
+
+            for i in range(len(self.players)):
+                player = self.players[i]
+                if i == 0:
+                    player.hit(keys.hit())
+                    player.move(keys.dir())
+                    if keys.is_jump():
+                        player.jump()
+                elif i == 1:
+                    player.hit(joys.hit())
+                    player.move(joys.dir())
+                    if joys.is_jump():
+                        player.jump()
+                player.update(time)
+            self.hurt_boxes.update(time)
+
+            # Hit gong
+            def gong_hit(g, h):
+                assets.sounds['gong'].play()
                 self.state.start('game')
+            gongs = Group()
+            gongs.add(self.gong)
+            physics.overlap(gongs, self.hurt_boxes, gong_hit)
+
+            self.gong.update(time)
         self.update = update
 
         def draw(surface):
@@ -67,11 +113,14 @@ class TitleState(State):
             surface.blit(font.render("WAD: punch",
                                      True,
                                      (0, 0, 0)),
-                         (50, self.game.height - 50))
+                         (50, self.game.height - 100))
             surface.blit(font.render("Arrows: move",
                                      True,
                                      (0, 0, 0)),
-                         (self.game.width - 300, self.game.height - 50))
+                         (50, self.game.height - 50))
+            self.gong.draw(surface)
+            for player in self.players:
+                player.draw(surface)
         self.draw = draw
 
 
@@ -86,29 +135,27 @@ class GameState(State):
         self.hurt_boxes = None
         self.players = None
         self.enemy_generator = None
+        # Sounds
+        assets.sounds['hits'] = load_sounds_from_folder("hits")
+        assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
+        assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
+        assets.sounds['swings'] = load_sounds_from_folder("swings")
+        assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
+        assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
+        assets.sounds['growls'] = load_sounds_from_folder("growls")
+        assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 
-        def preload():
-            # Sounds
-            pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
-            assets.sounds['hits'] = load_sounds_from_folder("hits")
-            assets.sounds['jump'] = pygame.mixer.Sound("sounds/jump.ogg")
-            assets.sounds['land'] = pygame.mixer.Sound("sounds/land.ogg")
-            assets.sounds['swings'] = load_sounds_from_folder("swings")
-            assets.sounds['meow'] = pygame.mixer.Sound("sounds/meow.ogg")
-            assets.sounds['yelp'] = pygame.mixer.Sound("sounds/yelp.ogg")
-            assets.sounds['growls'] = load_sounds_from_folder("growls")
-            assets.sounds['deaths'] = load_sounds_from_folder("deaths")
-
-            # Images/templates
-            assets.images['explosion'] = pygame.image.load("images/explosion.png")
-            assets.images['cat'] = pygame.image.load("images/players/cat.png")
-            assets.images['dog'] = pygame.image.load("images/players/dog.png")
-            assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
-            assets.images['monster'] = pygame.image.load("images/enemies/monster.png")
-            assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
-        self.preload = preload
+        # Images/templates
+        assets.images['explosion'] = pygame.image.load("images/explosion.png")
+        assets.images['cat'] = pygame.image.load("images/players/cat.png")
+        assets.images['dog'] = pygame.image.load("images/players/dog.png")
+        assets.images['zombie'] = pygame.image.load("images/enemies/zombie.png")
+        assets.images['monster'] = pygame.image.load(
+            "images/enemies/monster.png")
+        assets.images['flying'] = pygame.image.load("images/enemies/flying.png")
 
         def create():
+            pygame.mixer.music.load("sounds/Blackmoor Ninjas.mp3")
             self.score = 0
             self.bubbles = Group()
             self.enemies = Group()

@@ -1,4 +1,6 @@
+import os
 import pygame
+import sys
 
 
 class Joystick(object):
@@ -9,6 +11,9 @@ class Joystick(object):
         self._dir = 0
         self._is_jump = False
         self._hit = ""
+        # Workaround for stupid pygame leaving debug in
+        sys.stdout = os.devnull
+        sys.stderr = os.devnull
 
     def detect_joystick(self):
         self.detect_period = 300
