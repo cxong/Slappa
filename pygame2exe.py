@@ -9,6 +9,15 @@
 #Please Note have a backup file in a different directory as if it crashes you
 #will loose it all!(I lost 6 months of work because I did not do this)
 
+# Per-project settings
+PROJECT_NAME = "Slappa!"
+PROJECT_DESCRIPTION = "Arcade kung fu minigame"
+PROJECT_URL = "https://github.com/cxong/Slappa"
+PROJECT_VERSION = "1.0"
+AUTHOR_NAME = "Cong Xu"
+AUTHOR_EMAIL = "congusbongus@gmail.com"
+COPYRIGHT = "Copyright (c) 2014 Cong Xu"
+
 
 try:
     from distutils.core import setup
@@ -45,24 +54,24 @@ class BuildExe:
         self.script = "main.py"
 
         #Name of program
-        self.project_name = "Slappa!"
+        self.project_name = PROJECT_NAME
 
         #Project url
-        self.project_url = "https://github.com/cxong/Slappa"
+        self.project_url = PROJECT_URL
 
         #Version of program
-        self.project_version = "1.0"
+        self.project_version = PROJECT_VERSION
 
         #License of the program
         self.license = "MIT License"
 
         #Auhor of program
-        self.author_name = "Cong Xu"
-        self.author_email = "congusbongus@gmail.com"
-        self.copyright = "Copyright (c) 2009 Cong Xu"
+        self.author_name = AUTHOR_NAME
+        self.author_email = AUTHOR_EMAIL
+        self.copyright = COPYRIGHT
 
         #Description
-        self.project_description = "Arcade kung fu minigame"
+        self.project_description = PROJECT_DESCRIPTION
 
         #Icon file (None will use pygame default icon)
         self.icon_file = None
@@ -83,7 +92,7 @@ class BuildExe:
         self.zipfile_name = None
 
         #Dist directory
-        self.dist_dir ='dist'
+        self.dist_dir = 'dist'
 
     ## Code from DistUtils tutorial at http://wiki.python.org/moin/Distutils/Tutorial
     ## Originally borrowed from wxPython's setup and config files
@@ -96,6 +105,8 @@ class BuildExe:
         # returned in a format to be used for install_data
         def walk_helper(arg, dirname, files):
             if '.svn' in dirname:
+                return
+            if '.git' in dirname:
                 return
             names = []
             lst, wildcards = arg
