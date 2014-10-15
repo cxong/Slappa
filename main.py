@@ -25,6 +25,7 @@ class TitleState(State):
     def __init__(self):
         super(TitleState, self).__init__()
         assets.images['background'] = pygame.image.load("data/images/bg.png")
+        assets.images['ground'] = pygame.image.load("data/images/ground.png")
         assets.images['logo'] = pygame.image.load("data/images/logo.png")
         assets.images['gong'] = pygame.image.load("data/images/gong.png")
         assets.images['keyboard'] = pygame.image.load("data/images/keyboard.png")
@@ -48,8 +49,28 @@ class TitleState(State):
         def create():
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
-            self.hurt_boxes = Group()
-            self.players = Group()
+
+            bg = self.game.add.image(0, 0, 'background')
+            bg.anchor = Point(0, 0)
+            self.game.add.image(self.game.width / 2, self.game.height / 2,
+                                'logo')
+            self.hurt_boxes = self.game.add.group()
+            self.players = self.game.add.group()
+
+            padding = 25
+            kb = self.game.add.image(padding, self.game.height - padding,
+                                     'keyboard')
+            kb.anchor = Point(0, 1)
+            joy = self.game.add.image(self.game.width - padding,
+                                      self.game.height - padding,
+                                      'xbox360')
+            joy.anchor = Point(1, 1)
+
+            self.gong = self.game.add.sprite(self.game.width / 2,
+                                             FLOOR_Y,
+                                             'gong',
+                                             Point(2, 2))
+            self.gong.anchor.y = 1
 
             self.players.add(Player(self.game.width / 2 - 48, FLOOR_Y,
                                     'cat',
@@ -62,8 +83,6 @@ class TitleState(State):
                 player.is_dying = True
                 player.animations.play('die')
             self.game.players_joined = [False, False]
-            self.gong = Sprite(self.game.width / 2, FLOOR_Y, 'gong', Point(2, 2))
-            self.gong.anchor.y = 1
         self.create = create
 
         def update(time):
@@ -94,41 +113,20 @@ class TitleState(State):
                     player.move(self.game.joys.dir())
                     if self.game.joys.is_jump():
                         player.jump()
-                player.update(time)
-            self.hurt_boxes.update(time)
 
             # Hit gong
             def gong_hit(g, h):
                 assets.sounds['gong'].play()
                 self.state.start('game')
-            gongs = Group()
-            gongs.add(self.gong)
-            physics.overlap(gongs, self.hurt_boxes, gong_hit)
-
-            self.gong.update(time)
+            physics.overlap(self.gong, self.hurt_boxes, gong_hit)
         self.update = update
 
         def draw(surface):
-            surface.blit(assets.images['background'], (0, 0))
-            s = assets.images['logo']
-            surface.blit(s, ((self.game.width - s.get_width()) / 2,
-                             (self.game.height - s.get_height()) / 2))
             font = assets.fonts['big']
             surface.blit(font.render("Slappa!",
                                      True,
                                      (255, 140, 160)),
                          (280, self.game.height / 2))
-            font = assets.fonts['font']
-            s = assets.images['keyboard']
-            padding = 25
-            surface.blit(s, ((padding,
-                             (self.game.height - s.get_height() - padding))))
-            s = assets.images['xbox360']
-            surface.blit(s, (self.game.width - s.get_width() - padding,
-                             self.game.height - s.get_height() - padding))
-            self.gong.draw(surface)
-            for player in self.players:
-                player.draw(surface)
         self.draw = draw
 
 
@@ -165,11 +163,15 @@ class GameState(State):
         def create():
             pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.ogg")
             self.score = 0
-            self.bubbles = Group()
-            self.enemies = Group()
-            self.thing_group = Group()
-            self.hurt_boxes = Group()
-            self.players = Group()
+
+            bg = self.game.add.image(0, 0, 'background')
+            bg.anchor = Point(0, 0)
+
+            self.bubbles = self.game.add.group()
+            self.enemies = self.game.add.group()
+            self.thing_group = self.game.add.group()
+            self.hurt_boxes = self.game.add.group()
+            self.players = self.game.add.group()
             self.enemy_generator = EnemyGenerator(
                 self.enemies, self.players, self.thing_group)
 
@@ -222,15 +224,9 @@ class GameState(State):
                     player.move(self.game.joys.dir())
                     if self.game.joys.is_jump():
                         player.jump()
-                player.update(time)
 
             # remove dead enemies
             self.enemy_generator.update(time)
-            self.enemies.update(time)
-            # remove out of bounds things
-            self.thing_group.update(time)
-            self.hurt_boxes.update(time)
-            self.bubbles.update(time)
 
             # Collisions
             def hit(x, y):
@@ -276,18 +272,6 @@ class GameState(State):
         self.update = update
 
         def draw(surface):
-            #Render
-            surface.blit(assets.images['background'], (0, 0))
-            for enemy in self.enemies:
-                enemy.draw(surface)
-            for player in self.players:
-                player.draw(surface)
-            for thing in self.thing_group:
-                thing.draw(surface)
-            for box in self.hurt_boxes:
-                box.draw(surface)
-            for bubble in self.bubbles:
-                bubble.draw(surface)
             font = assets.fonts['font']
             padding = 25
             players_alive = 0

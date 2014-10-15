@@ -1,0 +1,17 @@
+from group import *
+from image import *
+from sprite import *
+
+
+class GameObjectFactory(object):
+    def __init__(self, game):
+        self.game = game
+
+    def group(self):
+        return self.game.world.add(Group())
+
+    def image(self, x, y, key, scale=Point(1, 1)):
+        return self.game.world.add(Image(x, y, key, scale))
+
+    def sprite(self, x, y, key, dimensions):
+        return self.game.world.add(Sprite(x, y, key, dimensions))

@@ -1,4 +1,6 @@
+from game_object_factory import *
 from state import *
+from world import *
 
 
 class Game(object):
@@ -10,7 +12,9 @@ class Game(object):
         self.width = width
         self.height = height
 
+        self.add = GameObjectFactory(self)
         self.state = StateManager(self, screen)
+        self.world = World()
 
     def __exit__(self, type, value, traceback):
         pygame.mixer.quit()
