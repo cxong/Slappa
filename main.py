@@ -52,6 +52,10 @@ class TitleState(State):
 
             bg = self.game.add.image(0, 0, 'background')
             bg.anchor = Point(0, 0)
+            ground = self.game.add.image(0, FLOOR_Y, 'ground')
+            ground.width = self.game.width
+            ground.height = self.game.height - FLOOR_Y
+            ground.anchor = Point(0, 0)
             self.game.add.image(self.game.width / 2, self.game.height / 2,
                                 'logo')
             self.hurt_boxes = self.game.add.group()
@@ -166,6 +170,11 @@ class GameState(State):
 
             bg = self.game.add.image(0, 0, 'background')
             bg.anchor = Point(0, 0)
+
+            ground = self.game.add.image(0, FLOOR_Y, 'ground')
+            ground.width = self.game.width
+            ground.height = self.game.height - FLOOR_Y
+            ground.anchor = Point(0, 0)
 
             self.bubbles = self.game.add.group()
             self.enemies = self.game.add.group()

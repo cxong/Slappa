@@ -32,3 +32,6 @@ class Point(object):
         dx = self.x - other.x
         dy = self.y - other.y
         return dx**2 + dy**2
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
