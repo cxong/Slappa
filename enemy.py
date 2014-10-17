@@ -137,10 +137,14 @@ class Enemy(SimpleCharacter):
                 break
 
     def do_hit(self, direction):
+        players_alive = [p for p in self.players.children if p.health > 0]
+        if len(players_alive) == 0:
+            return
         super(Enemy, self).do_hit(direction)
         # Throw a thing at a player
+        player = random.choice(players_alive)
         self.thing_group.add(Thing(self.game,
                                    self.x + self.hit_offset.x,
                                    self.y + self.hit_offset.y,
                                    self.thing_key,
-                                   random.choice(self.players.children).get_body_center()))
+                                   player.get_body_center()))
