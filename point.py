@@ -9,6 +9,9 @@ class Point(object):
     def multiply(self, other):
         return Point(self.x * other.x, self.y * other.y)
 
+    def divide(self, other):
+        return Point(self.x / other.x, self.y / other.y)
+
     def set_magnitude(self, magnitude):
         return self.normalize().multiply(Point(magnitude, magnitude))
 

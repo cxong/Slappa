@@ -3,9 +3,9 @@ from config import *
 
 
 class StateManager(object):
-    def __init__(self, game, screen):
+    def __init__(self, game):
         self.states = {}
-        self.screen = screen
+        self.screen = None  # Lazy initialise
         self.game = game
         self.active_state = None
 
@@ -26,6 +26,9 @@ class StateManager(object):
             self.active_state = self.states[key]
         while True:
             state = self.active_state
+            if self.screen is None:
+                self.screen = pygame.display.set_mode([self.game.scale.width,
+                                                       self.game.scale.height])
             state.start(self.screen)
             # At this stage, we either want to quit or we're changing to a new
             # state
@@ -47,7 +50,12 @@ class State(object):
     def start(self, screen):
         self.started = True
         self.is_quit = False
-        screenBuf = pygame.Surface(SCREEN_SIZE)
+        screen_buf = pygame.Surface([self.game.width, self.game.height])
+        final_buf = screen_buf
+        if (self.game.width != self.game.scale.width or
+                self.game.height != self.game.scale.height):
+            final_buf = pygame.Surface([self.game.scale.width,
+                                        self.game.scale.height])
         if self.preload is not None:
             self.preload()
         if self.create is not None:
@@ -62,10 +70,17 @@ class State(object):
             self.game.world.update(clock.get_time())
             if self.update is not None:
                 self.update(clock.get_time())
-            self.game.world.draw(screenBuf)
+            self.game.world.draw(screen_buf)
             if self.draw is not None:
-                self.draw(screenBuf)
-                screen.blit(screenBuf, (0, 0))
+                self.draw(screen_buf)
+            # Final scaling
+            if (self.game.width != self.game.scale.width or
+                    self.game.height != self.game.scale.height):
+                pygame.transform.scale(
+                    screen_buf,
+                    (self.game.scale.width, self.game.scale.height),
+                    final_buf)
+            screen.blit(final_buf, (0, 0))
             pygame.display.flip()
             clock.tick(FRAME_RATE)
         # Remove all stuff from stage

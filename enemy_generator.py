@@ -2,7 +2,8 @@ from enemy import *
 
 
 class EnemyGenerator(object):
-    def __init__(self, enemies, players, things):
+    def __init__(self, game, enemies, players, things):
+        self.game = game
         self.spawn_counter = 0
         self.spawn_period = 100
         self.max_enemies = 3
@@ -22,10 +23,13 @@ class EnemyGenerator(object):
                     'flying'
                 ])
                 y = FLOOR_Y
+
                 if choice == 'flying':
-                    y = random.randint(100, FLOOR_Y - 100)
+                    pad = self.game.height * 0.16
+                    y = random.randint(int(pad), int(FLOOR_Y - pad))
                 self.enemies.add(Enemy(
-                    random.choice([0, SCREEN_SIZE[0]]),
+                    self.game,
+                    random.choice([0, self.game.width]),
                     y,
                     choice,
                     self.players,

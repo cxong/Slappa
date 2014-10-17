@@ -2,14 +2,14 @@ from simple_character import *
 
 
 class Enemy(SimpleCharacter):
-    def __init__(self, x, y, key, players, thing_keys, things):
+    def __init__(self, game, x, y, key, players, thing_keys, things):
         self.moves = True
         if key == 'zombie':
-            self.init_zombie(x, y)
+            self.init_zombie(game, x, y)
         elif key == 'monster':
-            self.init_monster(x, y)
+            self.init_monster(game, x, y)
         elif key == 'flying':
-            self.init_flying(x, y)
+            self.init_flying(game, x, y)
 
         self.body.width = self.width * 0.5
         self.body.height = self.height * 0.5
@@ -27,8 +27,8 @@ class Enemy(SimpleCharacter):
         self.sounds['hurts'] = assets.sounds['deaths']
         self.sounds['deaths'] = assets.sounds['deaths']
 
-    def init_zombie(self, x, y):
-        super(Enemy, self).__init__(x, y, 'zombie', (64, 64))
+    def init_zombie(self, game, x, y):
+        super(Enemy, self).__init__(game, x, y, 'zombie', (64, 64))
 
         self.body.y = -35
         self.anchor.y = 0.95
@@ -43,8 +43,8 @@ class Enemy(SimpleCharacter):
         self.speed = 0.1
         self.max_speed = 0.05
 
-    def init_monster(self, x, y):
-        super(Enemy, self).__init__(x, y, 'monster', (64, 64))
+    def init_monster(self, game, x, y):
+        super(Enemy, self).__init__(game, x, y, 'monster', (64, 64))
 
         self.body.y = -25
         self.anchor.y = 0.84
@@ -63,8 +63,8 @@ class Enemy(SimpleCharacter):
         self.jump_force = 0.3
         self.moves = False
 
-    def init_flying(self, x, y):
-        super(Enemy, self).__init__(x, y, 'flying', (64, 64))
+    def init_flying(self, game, x, y):
+        super(Enemy, self).__init__(game, x, y, 'flying', (64, 64))
 
         #self.anchor.y = 0.84
 
@@ -120,10 +120,10 @@ class Enemy(SimpleCharacter):
                     continue
                 # Try to move towards center of screen
                 if (new_action in ('move_left', 'jump_left') and
-                        self.x < SCREEN_SIZE[0] / 4):
+                        self.x < self.game.width / 4):
                     continue
                 if (new_action in ('move_right', 'jump_right') and
-                        self.x > SCREEN_SIZE[0] * 3 / 4):
+                        self.x > self.game.width * 3 / 4):
                     continue
                 # See if we can jump
                 if self.gravity == 0.0 and (
@@ -139,7 +139,8 @@ class Enemy(SimpleCharacter):
     def do_hit(self, direction):
         super(Enemy, self).do_hit(direction)
         # Throw a thing at a player
-        self.thing_group.add(Thing(self.x + self.hit_offset.x,
+        self.thing_group.add(Thing(self.game,
+                                   self.x + self.hit_offset.x,
                                    self.y + self.hit_offset.y,
                                    self.thing_key,
                                    random.choice(self.players.children).get_body_center()))

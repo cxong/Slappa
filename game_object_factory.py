@@ -11,7 +11,7 @@ class GameObjectFactory(object):
         return self.game.world.add(Group())
 
     def image(self, x, y, key, scale=Point(1, 1)):
-        return self.game.world.add(Image(x, y, key, scale))
+        return self.game.world.add(Image(self.game, x, y, key, scale))
 
-    def sprite(self, x, y, key, dimensions):
-        return self.game.world.add(Sprite(x, y, key, dimensions))
+    def sprite(self, x, y, key, scale=Point(1, 1)):
+        return self.game.world.add(Sprite(self.game, x, y, key, scale))

@@ -3,8 +3,8 @@ from util import *
 
 
 class PlayerHurtBox(Sprite):
-    def __init__(self, x, y, dimensions, player):
-        super(PlayerHurtBox, self).__init__(x, y, '')
+    def __init__(self, game, x, y, dimensions, player):
+        super(PlayerHurtBox, self).__init__(game, x, y, '')
         self.body.width = dimensions[0]
         self.body.height = dimensions[1]
         self.count = player.hit_duration
@@ -18,8 +18,8 @@ class PlayerHurtBox(Sprite):
 
 
 class Player(SimpleCharacter):
-    def __init__(self, x, y, key, hurt_boxes):
-        super(Player, self).__init__(x, y, key, (64, 64))
+    def __init__(self, game, x, y, key, hurt_boxes):
+        super(Player, self).__init__(game, x, y, key, (64, 64))
 
         self.animations.animations['idle'] = Animation([0, 1, 2, 3], 5, True)
         self.animations.animations['walk'] = Animation([16, 17, 18, 19, 20, 21, 22, 23], 2, True)
@@ -83,23 +83,26 @@ class Player(SimpleCharacter):
         super(Player, self).update(time)
         # Keep inside world
         self.x = max([self.x, self.width / 2])
-        self.x = min([self.x, SCREEN_SIZE[0] - self.width / 2])
+        self.x = min([self.x, self.game.width - self.width / 2])
         self.y = max([self.y, self.height / 2])
-        self.y = min([self.y, SCREEN_SIZE[1] - self.height / 2])
+        self.y = min([self.y, self.game.height - self.height / 2])
 
     def do_hit(self, direction):
         if direction == "left":
-            self.hurt_boxes.add(PlayerHurtBox(self.x - 32,
+            self.hurt_boxes.add(PlayerHurtBox(self.game,
+                                              self.x - 32,
                                               self.y + self.body.y,
                                               (64, 80),
                                               self))
         elif direction == "right":
-            self.hurt_boxes.add(PlayerHurtBox(self.x + 32,
+            self.hurt_boxes.add(PlayerHurtBox(self.game,
+                                              self.x + 32,
                                               self.y + self.body.y,
                                               (64, 80),
                                               self))
         elif direction == "up":
-            self.hurt_boxes.add(PlayerHurtBox(self.x,
+            self.hurt_boxes.add(PlayerHurtBox(self.game,
+                                              self.x,
                                               self.y + self.body.y - 32,
                                               (90, 64),
                                               self))

@@ -5,8 +5,8 @@ from sprite import *
 class Thing(Sprite):
     SPEED = 0.3
 
-    def __init__(self, x, y, key, target):
-        super(Thing, self).__init__(x, y, key)
+    def __init__(self, game, x, y, key, target):
+        super(Thing, self).__init__(game, x, y, key)
 
         self.allow_rotations = True
         self.rotation = random.randint(0, 360)

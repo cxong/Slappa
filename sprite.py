@@ -6,10 +6,12 @@ from point import *
 
 class Sprite(object):
     def __init__(self,
+                 game,
                  x, y,
                  key,
                  scale=Point(1, 1),
                  crop=pygame.Rect(0, 0, 0, 0)):
+        self.game = game
         if key != '':
             self.image = assets.images[key]
         else:
@@ -71,9 +73,9 @@ class Sprite(object):
 
         if (self.out_of_bounds_kill and (
                 self.x + self.width < 0 or
-                self.x - self.width > SCREEN_SIZE[0] or
+                self.x - self.width > self.game.width or
                 self.y + self.height < 0 or
-                self.y - self.height > SCREEN_SIZE[1])):
+                self.y - self.height > self.game.height)):
             self.health = 0
 
     def draw(self, surface):

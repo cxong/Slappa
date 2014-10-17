@@ -4,7 +4,8 @@ from point import *
 
 
 class Image(object):
-    def __init__(self, x, y, key, scale=Point(1, 1)):
+    def __init__(self, game, x, y, key, scale=Point(1, 1)):
+        self.game = game
         self.__width = 0
         self.__height = 0
         self.__smoothed = True
@@ -34,14 +35,14 @@ class Image(object):
         return self.__width
     @width.setter
     def width(self, value):
-        self.__width = value
+        self.__width = int(value)
         self.__set_scale()
     @property
     def height(self):
         return self.__height
     @height.setter
     def height(self, value):
-        self.__height = value
+        self.__height = int(value)
         self.__set_scale()
     @property
     def smoothed(self):
@@ -49,6 +50,11 @@ class Image(object):
     @smoothed.setter
     def smoothed(self, value):
         self.__smoothed = value
+        self.__set_scale()
+
+    def set_scale(self, scale):
+        self.__width = int(self.__width * scale.x)
+        self.__height = int(self.__height * scale.y)
         self.__set_scale()
 
 

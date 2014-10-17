@@ -2,9 +2,10 @@ from util import *
 
 
 class SimpleCharacter(Sprite):
-    def __init__(self, x, y, key, dimensions):
+    def __init__(self, game, x, y, key, dimensions):
         rect = pygame.Rect(0, 0, dimensions[0], dimensions[1])
-        super(SimpleCharacter, self).__init__(x, y,
+        super(SimpleCharacter, self).__init__(game,
+                                              x, y,
                                               key,
                                               Point(2, 2),
                                               rect)

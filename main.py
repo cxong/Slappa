@@ -2,7 +2,6 @@ import physics
 from bubble import *
 from enemy_generator import *
 from game import *
-from group import *
 from joystick import *
 from keyboard import *
 from player import *
@@ -12,7 +11,8 @@ from state import *
 
 class SlappaGame(Game):
     def __init__(self):
-        super(SlappaGame, self).__init__("Slappa!", SCREEN_SIZE[0], SCREEN_SIZE[1])
+        super(SlappaGame, self).__init__("Slappa!", GAME_SIZE[0], GAME_SIZE[1])
+        self.scale.setup_scale(SCREEN_SIZE[0], SCREEN_SIZE[1])
         self.players_joined = [False, False]
 
         # Input devices
@@ -52,16 +52,17 @@ class TitleState(State):
 
             bg = self.game.add.image(0, 0, 'background')
             bg.anchor = Point(0, 0)
+            bg.smoothed = False
+            bg.width = self.game.width
+            bg.height = self.game.height
             ground = self.game.add.image(0, FLOOR_Y, 'ground')
             ground.width = self.game.width
             ground.height = self.game.height - FLOOR_Y
             ground.anchor = Point(0, 0)
-            self.game.add.image(self.game.width / 2, self.game.height / 2,
-                                'logo')
-            self.hurt_boxes = self.game.add.group()
-            self.players = self.game.add.group()
+            logo = self.game.add.image(self.game.width / 2, self.game.height / 2,
+                                       'logo')
 
-            padding = 25
+            padding = 24
             kb = self.game.add.image(padding, self.game.height - padding,
                                      'keyboard')
             kb.anchor = Point(0, 1)
@@ -76,10 +77,14 @@ class TitleState(State):
                                              Point(2, 2))
             self.gong.anchor.y = 1
 
-            self.players.add(Player(self.game.width / 2 - 48, FLOOR_Y,
+            self.hurt_boxes = self.game.add.group()
+            self.players = self.game.add.group()
+            self.players.add(Player(self.game,
+                                    self.game.width / 2 - 48, FLOOR_Y,
                                     'cat',
                                     self.hurt_boxes))
-            self.players.add(Player(self.game.width / 2 + 48, FLOOR_Y,
+            self.players.add(Player(self.game,
+                                    self.game.width / 2 + 48, FLOOR_Y,
                                     'dog',
                                     self.hurt_boxes))
             for player in self.players:
@@ -127,10 +132,13 @@ class TitleState(State):
 
         def draw(surface):
             font = assets.fonts['big']
-            surface.blit(font.render("Slappa!",
+            text = "Slappa!"
+            size = font.size(text)
+            surface.blit(font.render(text,
                                      True,
                                      (255, 140, 160)),
-                         (280, self.game.height / 2))
+                         ((self.game.width - size[0]) / 2,
+                          (self.game.height - size[1]) / 2))
         self.draw = draw
 
 
@@ -170,6 +178,9 @@ class GameState(State):
 
             bg = self.game.add.image(0, 0, 'background')
             bg.anchor = Point(0, 0)
+            bg.smoothed = False
+            bg.width = self.game.width
+            bg.height = self.game.height
 
             ground = self.game.add.image(0, FLOOR_Y, 'ground')
             ground.width = self.game.width
@@ -182,12 +193,15 @@ class GameState(State):
             self.hurt_boxes = self.game.add.group()
             self.players = self.game.add.group()
             self.enemy_generator = EnemyGenerator(
-                self.enemies, self.players, self.thing_group)
+                self.game, self.enemies, self.players, self.thing_group)
 
-            self.players.add(Player(SCREEN_SIZE[0] / 2 - 48, FLOOR_Y,
+            offset = self.game.width * 0.06
+            self.players.add(Player(self.game,
+                                    self.game.width / 2 - offset, FLOOR_Y,
                                     'cat',
                                     self.hurt_boxes))
-            self.players.add(Player(SCREEN_SIZE[0] / 2 + 48, FLOOR_Y,
+            self.players.add(Player(self.game,
+                                    self.game.width / 2 + offset, FLOOR_Y,
                                     'dog',
                                     self.hurt_boxes))
             if not self.game.players_joined[0]:
@@ -240,7 +254,7 @@ class GameState(State):
             # Collisions
             def hit(x, y):
                 random.choice(assets.sounds['hits']).play()
-                self.bubbles.add(Bubble(x, y))
+                self.bubbles.add(Bubble(self.game, x, y))
 
             def enemy_hurt(e, h):
                 if not h.has_hit_monster:
