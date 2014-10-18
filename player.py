@@ -12,7 +12,7 @@ class PlayerHurtBox(Sprite):
         self.player = player
 
     def update(self, time):
-        self.count -= 1
+        self.count -= ANIM_FRAME_RATE / FRAME_RATE
         if self.count <= 0:
             self.health = 0
 

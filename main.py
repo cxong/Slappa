@@ -102,7 +102,7 @@ class TitleState(State):
         self.create = create
 
         def update(time):
-            self.grace_timer -= 1
+            self.grace_timer -= ANIM_FRAME_RATE / FRAME_RATE
             if self.grace_timer <= 0:
                 self.game.keys.update()
                 if self.game.keys.is_escape():

@@ -1,4 +1,5 @@
 import pygame
+from config import *
 
 
 class Animation(object):
@@ -25,11 +26,11 @@ class Animation(object):
     def update(self):
         if not self.is_playing:
             return
-        self.sub_counter += 1
-        if self.sub_counter == self.duration:
-            self.sub_counter = 0
+        self.sub_counter += ANIM_FRAME_RATE / FRAME_RATE
+        while self.sub_counter >= self.duration:
+            self.sub_counter -= self.duration
             self.counter += 1
-        if self.counter == len(self.frames):
+        if self.counter >= len(self.frames):
             if self.loop:
                 self.counter = 0
             else:

@@ -84,7 +84,7 @@ class Enemy(SimpleCharacter):
             self.y = FLOOR_Y
         if self.is_hitting:
             return
-        self.delay -= 1
+        self.delay -= ANIM_FRAME_RATE / FRAME_RATE
         # Perform the action
         if self.action == 'idle':
             # Idle; don't do anything
@@ -103,7 +103,7 @@ class Enemy(SimpleCharacter):
             if not self.is_jumping:
                 self.jump()
             self.move(1)
-        if self.delay == 0 or self.action == 'hit':
+        if self.delay <= 0 or self.action == 'hit':
             self.delay = random.randint(40, 60)
             # Switch to new action
             while True:

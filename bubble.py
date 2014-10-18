@@ -1,3 +1,4 @@
+from config import *
 from image import *
 
 
@@ -9,7 +10,7 @@ class Bubble(Image):
         self.__exists = True
 
     def update(self, time):
-        self.count -= 1
+        self.count -= ANIM_FRAME_RATE / FRAME_RATE
         if self.count <= 0:
             self.__exists = False
 

@@ -13,7 +13,7 @@ class EnemyGenerator(object):
         self.things = things
 
     def update(self, time):
-        self.spawn_counter -= 1
+        self.spawn_counter -= ANIM_FRAME_RATE / FRAME_RATE
         if self.spawn_counter <= 0:
             self.spawn_counter = self.spawn_period
             if len(self.enemies.children) < self.max_enemies:
