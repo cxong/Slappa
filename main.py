@@ -30,6 +30,7 @@ class TitleState(State):
         assets.images['gong'] = pygame.image.load("data/images/gong.png")
         assets.images['keyboard'] = pygame.image.load("data/images/keyboard.png")
         assets.images['xbox360'] = pygame.image.load("data/images/xbox360.png")
+        assets.images['gcw-zero'] = pygame.image.load("data/images/gcw-zero.png")
         assets.sounds['gong'] = pygame.mixer.Sound("data/sounds/gong.ogg")
         assets.fonts['font'] = pygame.font.Font("data/MedievalSharp.ttf", 32)
         assets.fonts['big'] = pygame.font.Font("data/MedievalSharp.ttf", 72)
@@ -63,9 +64,15 @@ class TitleState(State):
                                        'logo')
 
             padding = 24
-            kb = self.game.add.image(padding, self.game.height - padding,
-                                     'keyboard')
-            kb.anchor = Point(0, 1)
+            if GCW_ZERO:
+                gcw_zero = self.game.add.image(padding,
+                                               self.game.height - padding,
+                                               'gcw-zero')
+                gcw_zero.anchor = Point(0, 1)
+            else:
+                kb = self.game.add.image(padding, self.game.height - padding,
+                                         'keyboard')
+                kb.anchor = Point(0, 1)
             joy = self.game.add.image(self.game.width - padding,
                                       self.game.height - padding,
                                       'xbox360')
