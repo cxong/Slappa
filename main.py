@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import physics
 from bubble import *
 from enemy_generator import *
