@@ -88,18 +88,8 @@ class TitleState(State):
 
             self.hurt_boxes = self.game.add.group()
             self.players = self.game.add.group()
-            self.players.add(Player(self.game,
-                                    self.game.width / 2 - 48, FLOOR_Y,
-                                    'cat',
-                                    self.hurt_boxes))
-            self.players.add(Player(self.game,
-                                    self.game.width / 2 + 48, FLOOR_Y,
-                                    'dog',
-                                    self.hurt_boxes))
-            for player in self.players:
-                player.health = 0
-                player.is_dying = True
-                player.animations.play('die')
+            offset = self.game.width * 0.06
+            self.add_player(self.game.width / 2 - offset, 'cat')
             self.game.players_joined = [False, False]
         self.create = create
 
@@ -110,6 +100,12 @@ class TitleState(State):
                 if self.game.keys.is_escape():
                     self.is_quit = True
                 self.game.joys.update()
+
+            # Detect second player
+            if (len(self.players) == 1 and
+                    self.game.joys.joystick is not None):
+                offset = self.game.width * 0.06
+                self.add_player(self.game.width / 2 + offset, 'dog')
 
             # Detect input and add player
             if self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "":
@@ -149,6 +145,15 @@ class TitleState(State):
                          ((self.game.width - size[0]) / 2,
                           (self.game.height - size[1]) / 2))
         self.draw = draw
+
+    def add_player(self, x, key):
+        player = self.players.add(Player(self.game,
+                                         x, FLOOR_Y,
+                                         key,
+                                         self.hurt_boxes))
+        player.health = 0
+        player.is_dying = True
+        player.animations.play('die')
 
 
 # Game state
@@ -205,22 +210,7 @@ class GameState(State):
                 self.game, self.enemies, self.players, self.thing_group)
 
             offset = self.game.width * 0.06
-            self.players.add(Player(self.game,
-                                    self.game.width / 2 - offset, FLOOR_Y,
-                                    'cat',
-                                    self.hurt_boxes))
-            self.players.add(Player(self.game,
-                                    self.game.width / 2 + offset, FLOOR_Y,
-                                    'dog',
-                                    self.hurt_boxes))
-            if not self.game.players_joined[0]:
-                self.players[0].health = 0
-                self.players[0].is_dying = True
-                self.players[0].animations.play('die')
-            if not self.game.players_joined[1]:
-                self.players[1].health = 0
-                self.players[1].is_dying = True
-                self.players[1].animations.play('die')
+            self.add_player(self.game.width / 2 - offset, 'cat', 0)
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
         self.create = create
@@ -232,6 +222,12 @@ class GameState(State):
                 self.state.start('title')
                 return
             self.game.joys.update()
+
+            # Detect second player
+            if (len(self.players) == 1 and
+                    self.game.joys.joystick is not None):
+                offset = self.game.width * 0.06
+                self.add_player(self.game.width / 2 + offset, 'dog', 1)
 
             # Detect input and add player
             if (not self.game.players_joined[0] and
@@ -327,6 +323,16 @@ class GameState(State):
                 surface.blit(font.render("YOU LOSE", True, (255, 255, 255)),
                              (self.game.width / 2 - 150, self.game.height / 2 - 50))
         self.draw = draw
+
+    def add_player(self, x, key, index):
+        player = self.players.add(Player(self.game,
+                                         x, FLOOR_Y,
+                                         key,
+                                         self.hurt_boxes))
+        if not self.game.players_joined[index]:
+            player.health = 0
+            player.is_dying = True
+            player.animations.play('die')
 
 
 def main():
