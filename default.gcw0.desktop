@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Slappa!
+Type=Application
+Exec=main.py
+Icon=icon
+Comment=Arcade kungfu minigame
+Terminal=false
+Categories=games;
