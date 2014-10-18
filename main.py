@@ -83,6 +83,7 @@ class TitleState(State):
                                              'gong',
                                              Point(2, 2))
             self.gong.anchor.y = 1
+            self.gong.body.y = -46
 
             self.hurt_boxes = self.game.add.group()
             self.players = self.game.add.group()

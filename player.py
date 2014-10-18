@@ -3,8 +3,14 @@ from util import *
 
 
 class PlayerHurtBox(Sprite):
-    def __init__(self, game, x, y, dimensions, player):
-        super(PlayerHurtBox, self).__init__(game, x, y, '')
+    def __init__(self, game, dx, dy, dimensions, player):
+        super(PlayerHurtBox, self).__init__(
+            game,
+            player.x + player.body.x + dx,
+            player.y + player.body.y + dy,
+            '')
+        self.dx = dx
+        self.dy = dy
         self.body.width = dimensions[0]
         self.body.height = dimensions[1]
         self.count = player.hit_duration
@@ -13,6 +19,8 @@ class PlayerHurtBox(Sprite):
 
     def update(self, time):
         self.count -= ANIM_FRAME_RATE / FRAME_RATE
+        self.x = self.player.x + self.player.body.x + self.dx
+        self.y = self.player.y + self.player.body.y + self.dy
         if self.count <= 0:
             self.health = 0
 
@@ -90,20 +98,20 @@ class Player(SimpleCharacter):
     def do_hit(self, direction):
         if direction == "left":
             self.hurt_boxes.add(PlayerHurtBox(self.game,
-                                              self.x - 32,
-                                              self.y + self.body.y,
+                                              -32,
+                                              0,
                                               (64, 80),
                                               self))
         elif direction == "right":
             self.hurt_boxes.add(PlayerHurtBox(self.game,
-                                              self.x + 32,
-                                              self.y + self.body.y,
+                                              32,
+                                              0,
                                               (64, 80),
                                               self))
         elif direction == "up":
             self.hurt_boxes.add(PlayerHurtBox(self.game,
-                                              self.x,
-                                              self.y + self.body.y - 32,
+                                              0,
+                                              -32,
                                               (90, 64),
                                               self))
         super(Player, self).do_hit(direction)
