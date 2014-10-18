@@ -6,6 +6,11 @@ class Point(object):
         self.x = x
         self.y = y
 
+    def add(self, other):
+        self.x += other.x
+        self.y += other.y
+        return self
+
     def multiply(self, other):
         return Point(self.x * other.x, self.y * other.y)
 

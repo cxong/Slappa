@@ -143,8 +143,14 @@ class Enemy(SimpleCharacter):
         super(Enemy, self).do_hit(direction)
         # Throw a thing at a player
         player = random.choice(players_alive)
+        player_center = player.get_body_center()
+        # Randomly offset target
+        player_center.add(Point(
+            random.uniform(-ENEMY_TARGET_OFFSET, ENEMY_TARGET_OFFSET),
+            random.uniform(-ENEMY_TARGET_OFFSET, ENEMY_TARGET_OFFSET)))
+        player_center.y = min([FLOOR_Y, player_center.y])
         self.thing_group.add(Thing(self.game,
                                    self.x + self.hit_offset.x,
                                    self.y + self.hit_offset.y,
                                    self.thing_key,
-                                   player.get_body_center()))
+                                   player_center))
