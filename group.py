@@ -7,7 +7,8 @@ class Group(object):
         return child
 
     def update(self, time):
-        self.children[:] = [child for child in self.children if child.exists()]
+        self.children[:] = [
+            child for child in self.children if child.exists()]
         for child in self.children:
             child.update(time)
 

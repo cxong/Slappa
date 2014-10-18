@@ -84,6 +84,7 @@ class TitleState(State):
                                              'gong',
                                              Point(2, 2))
             self.gong.anchor.y = 1
+            self.gong.body.y = -46
 
             self.hurt_boxes = self.game.add.group()
             self.players = self.game.add.group()
@@ -103,7 +104,7 @@ class TitleState(State):
         self.create = create
 
         def update(time):
-            self.grace_timer -= 1
+            self.grace_timer -= ANIM_FRAME_RATE / FRAME_RATE
             if self.grace_timer <= 0:
                 self.game.keys.update()
                 if self.game.keys.is_escape():
