@@ -66,6 +66,9 @@ class State(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_quit = True
+                elif event.type == pygame.KEYDOWN:
+                    if self.game.keys.on_down is not None:
+                        self.game.keys.on_down(event.key, event.unicode)
 
             self.game.world.update(clock.get_time())
             if self.update is not None:

@@ -15,6 +15,7 @@ class Keyboard:
             self.hit_left = pygame.K_LSHIFT
             self.hit_right = pygame.K_LCTRL
             self.hit_up = pygame.K_SPACE
+        self.on_down = None
 
     def update(self):
         self.keys = pygame.key.get_pressed()

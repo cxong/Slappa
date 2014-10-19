@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+import itertools
 import physics
 from bubble import *
 from enemy_generator import *
 from game import *
+from high_score import *
 from joystick import *
 from keyboard import *
 from player import *
@@ -156,6 +158,87 @@ class TitleState(State):
         player.animations.play('die')
 
 
+class HighScoreHelper(object):
+    def __init__(self, state):
+        self.high_scores = None
+        self.top_scores = []
+        self.score_index = -1
+        self.state = state
+        self.is_entering = False
+        self.last_key = None
+        state.game.keys.on_down = self.enter_key
+
+    def __exit__(self, type, value, traceback):
+        self.game.keys.on_down = None
+
+    def enter_key(self, key, unicode):
+        if self.score_index >= 0 and self.is_entering:
+            score = self.top_scores[self.score_index]
+            if pygame.K_a <= key <= pygame.K_z:
+                score[1] += unicode
+            elif key == pygame.K_BACKSPACE and len(score[1]) > 0:
+                score[1] = score[1][:-1]
+            elif key == pygame.K_RETURN or key == pygame.K_KP_ENTER:
+                self.is_entering = False
+                self.high_scores.add(score[0], score[1])
+
+    def update(self):
+        # Check for game end and high score
+        if (all(player.health <= 0 for player in self.state.players) and
+                self.high_scores is None):
+            self.high_scores = HighScore()
+            # Check to see if our score is good enough
+            i = 0
+            for score in self.high_scores.get_scores():
+                if score[0] <= self.state.score and self.score_index == -1:
+                    self.score_index = i
+                    self.top_scores.append([self.state.score,
+                                            '',
+                                            self.high_scores.get_date()])
+                i += 1
+                self.top_scores.append(score)
+                if i == 10:
+                    break
+            if i != 10 and self.score_index < 0:
+                self.score_index = i
+                self.top_scores.append([self.state.score,
+                                        '',
+                                        self.high_scores.get_date()])
+            if self.score_index >= 0:
+                self.is_entering = True
+
+    def draw(self, surface):
+        font = assets.fonts['font']
+        # Headings
+        line_height = 36
+        y = 24
+        name_x = 25
+        score_x = int(self.state.game.width * 0.4)
+        date_x = int(self.state.game.width * 0.7)
+        surface.blit(font.render("Name", True, (255, 255, 0)),
+                     (name_x, y))
+        surface.blit(font.render("Score", True, (255, 255, 0)),
+                     (score_x, y))
+        surface.blit(font.render("Date", True, (255, 255, 0)),
+                     (date_x, y))
+        y += line_height
+        i = 0
+        for score in self.top_scores:
+            # Name
+            name = score[1][:]
+            color = (255, 255, 255)
+            if self.is_entering and i == self.score_index:
+                name += '_'
+            if i == self.score_index:
+                color = (0, 255, 0)
+            surface.blit(font.render(name, True, color), (name_x, y))
+            # Score
+            surface.blit(font.render(str(score[0]), True, color), (score_x, y))
+            # Date
+            surface.blit(font.render(score[2], True, color), (date_x, y))
+            i += 1
+            y += line_height
+
 # Game state
 class GameState(State):
     def __init__(self):
@@ -167,6 +250,7 @@ class GameState(State):
         self.hurt_boxes = None
         self.players = None
         self.enemy_generator = None
+        self.high_score_helper = None
         # Sounds
         assets.sounds['hits'] = load_sounds_from_folder("hits")
         assets.sounds['jump'] = pygame.mixer.Sound("data/sounds/jump.ogg")
@@ -189,6 +273,7 @@ class GameState(State):
         def create():
             pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.ogg")
             self.score = 0
+            self.high_score_helper = HighScoreHelper(self)
 
             bg = self.game.add.image(0, 0, 'background')
             bg.anchor = Point(0, 0)
@@ -297,6 +382,8 @@ class GameState(State):
             physics.overlap(self.players,
                             self.thing_group,
                             player_get_hit)
+
+            self.high_score_helper.update()
         self.update = update
 
         def draw(surface):
@@ -314,14 +401,13 @@ class GameState(State):
                              (x, self.game.height - 25 - padding))
                 if player.health > 0:
                     players_alive += 1
-            surface.blit(font.render("Score: " + str(self.score),
-                                     True,
-                                     (255, 255, 0)),
-                         (self.game.width / 2 - 100, 50))
             if players_alive == 0:
-                font = assets.fonts['big']
-                surface.blit(font.render("YOU LOSE", True, (255, 255, 255)),
-                             (self.game.width / 2 - 150, self.game.height / 2 - 50))
+                self.high_score_helper.draw(surface)
+            else:
+                surface.blit(font.render("Score: " + str(self.score),
+                                         True,
+                                         (255, 255, 0)),
+                             (self.game.width / 2 - 100, 50))
         self.draw = draw
 
     def add_player(self, x, key, index):
