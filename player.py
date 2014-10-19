@@ -87,6 +87,10 @@ class Player(SimpleCharacter):
         self.sounds['hurts'] = [assets.sounds['yelp']]
         self.sounds['deaths'] = [assets.sounds['yelp']]
 
+    def exists(self):
+        # Players always exist
+        return True
+
     def update(self, time):
         super(Player, self).update(time)
         # Keep inside world

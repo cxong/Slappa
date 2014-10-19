@@ -296,6 +296,10 @@ class GameState(State):
 
             offset = self.game.width * 0.06
             self.add_player(self.game.width / 2 - offset, 'cat', 0)
+            # Detect second player
+            if self.game.joys.joystick is not None:
+                offset = self.game.width * 0.06
+                self.add_player(self.game.width / 2 + offset, 'dog', 1)
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
         self.create = create
@@ -308,21 +312,18 @@ class GameState(State):
                 return
             self.game.joys.update()
 
-            # Detect second player
-            if (len(self.players) == 1 and
-                    self.game.joys.joystick is not None):
-                offset = self.game.width * 0.06
-                self.add_player(self.game.width / 2 + offset, 'dog', 1)
-
             # Detect input and add player
-            if (not self.game.players_joined[0] and
-                    (self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "")):
-                self.players[0].health = 5
-                self.game.players_joined[0] = True
-            if (not self.game.players_joined[1] and
-                    (self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "")):
-                self.players[1].health = 5
-                self.game.players_joined[1] = True
+            if not self.high_score_helper.is_entering:
+                if (not self.game.players_joined[0] and
+                        (self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "")):
+                    self.players[0].health = 5
+                    self.game.players_joined[0] = True
+                if (not self.game.players_joined[1] and
+                        (self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "")):
+                    self.players[1].health = 5
+                    self.game.players_joined[1] = True
+            else:
+                self.game.players_joined = [True, True]
 
             #Update
             for i in range(len(self.players)):

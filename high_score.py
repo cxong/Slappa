@@ -8,7 +8,6 @@ class HighScore(object):
 
     def __init__(self):
         locale.setlocale(locale.LC_TIME, '')
-        self.date_format = locale.nl_langinfo(locale.D_FMT)
         # Load existing high scores
         try:
             with open(self.filename, 'rb') as f:
@@ -17,7 +16,7 @@ class HighScore(object):
             self.scores = []
 
     def get_date(self):
-        return datetime.date.today().strftime(self.date_format)
+        return datetime.date.today().strftime('%x')
 
     def add(self, score, name):
         date = self.get_date()
