@@ -156,7 +156,7 @@ class TitleState(State):
             text = "Slappa!"
             size = font.size(text)
             surface.blit(font.render(text,
-                                     True,
+                                     FONT_ANTIALIAS,
                                      (255, 140, 160)),
                          ((self.game.width - size[0]) / 2,
                           (self.game.height - size[1]) / 2))
@@ -229,11 +229,11 @@ class HighScoreHelper(object):
         name_x = 25
         score_x = int(self.state.game.width * 0.4)
         date_x = int(self.state.game.width * 0.7)
-        surface.blit(font.render("Name", True, (255, 255, 0)),
+        surface.blit(font.render("Name", FONT_ANTIALIAS, (255, 255, 0)),
                      (name_x, y))
-        surface.blit(font.render("Score", True, (255, 255, 0)),
+        surface.blit(font.render("Score", FONT_ANTIALIAS, (255, 255, 0)),
                      (score_x, y))
-        surface.blit(font.render("Date", True, (255, 255, 0)),
+        surface.blit(font.render("Date", FONT_ANTIALIAS, (255, 255, 0)),
                      (date_x, y))
         y += line_height
         i = 0
@@ -245,11 +245,11 @@ class HighScoreHelper(object):
                 name += '_'
             if i == self.score_index:
                 color = (0, 255, 0)
-            surface.blit(font.render(name, True, color), (name_x, y))
+            surface.blit(font.render(name, FONT_ANTIALIAS, color), (name_x, y))
             # Score
-            surface.blit(font.render(str(score[0]), True, color), (score_x, y))
+            surface.blit(font.render(str(score[0]), FONT_ANTIALIAS, color), (score_x, y))
             # Date
-            surface.blit(font.render(score[2], True, color), (date_x, y))
+            surface.blit(font.render(score[2], FONT_ANTIALIAS, color), (date_x, y))
             i += 1
             y += line_height
 
@@ -405,7 +405,7 @@ class GameState(State):
                 if i == 1:
                     x = self.game.width - 100 - padding
                 surface.blit(font.render("HP: " + str(player.health),
-                                         True,
+                                         FONT_ANTIALIAS,
                                          (0, 255, 0)),
                              (x, self.game.height - 25 - padding))
                 if player.health > 0:
@@ -414,12 +414,12 @@ class GameState(State):
                 self.high_score_helper.draw(surface)
             else:
                 surface.blit(font.render("Score: " + str(self.score),
-                                         True,
+                                         FONT_ANTIALIAS,
                                          (255, 255, 0)),
                              (self.game.width / 2 - 100, 50))
             if DEBUG_SHOW_FPS:
                 surface.blit(font.render("FPS: " + str(self.game.time.fps),
-                                         True,
+                                         FONT_ANTIALIAS,
                                          (0, 0, 0)),
                              (self.game.width - 200, 50))
         self.draw = draw
