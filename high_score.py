@@ -1,16 +1,17 @@
 import datetime
 import locale
 import pickle
+from os.path import expanduser
 
 
 class HighScore(object):
-    filename = 'slappa_scores.dat'
+    filename = 'scores.dat'
 
     def __init__(self):
         locale.setlocale(locale.LC_TIME, '')
         # Load existing high scores
         try:
-            with open(self.filename, 'rb') as f:
+            with open(expanduser('~') + '/' + self.filename, 'rb') as f:
                 self.scores = pickle.load(f)
         except:
             self.scores = []
