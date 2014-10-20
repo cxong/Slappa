@@ -1,4 +1,5 @@
 import os
+import platform
 import pygame
 import sys
 
@@ -11,9 +12,10 @@ class Joystick(object):
         self._dir = 0
         self._is_jump = False
         self._hit = ""
-        # Workaround for stupid pygame leaving debug in
-        sys.stdout = os.devnull
-        sys.stderr = os.devnull
+        if platform.system() == 'Windows':
+            # Workaround for stupid pygame leaving debug in
+            sys.stdout = os.devnull
+            sys.stderr = os.devnull
 
     def detect_joystick(self):
         self.detect_period = 300

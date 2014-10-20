@@ -60,7 +60,7 @@ class State(object):
             self.preload()
         if self.create is not None:
             self.create()
-        clock = pygame.time.Clock()
+        clock = self.game.time.clock
         clock.tick()
         while not self.is_quit:
             for event in pygame.event.get():
@@ -85,6 +85,7 @@ class State(object):
                     final_buf)
             screen.blit(final_buf, (0, 0))
             pygame.display.flip()
+            self.game.time.update(clock.get_time())
             clock.tick(FRAME_RATE)
         # Remove all stuff from stage
         self.game.world.destroy()

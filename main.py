@@ -409,6 +409,11 @@ class GameState(State):
                                          True,
                                          (255, 255, 0)),
                              (self.game.width / 2 - 100, 50))
+            if DEBUG_SHOW_FPS:
+                surface.blit(font.render("FPS: " + str(self.game.time.fps),
+                                         True,
+                                         (0, 0, 0)),
+                             (self.game.width - 200, 50))
         self.draw = draw
 
     def add_player(self, x, key, index):
@@ -424,6 +429,8 @@ class GameState(State):
 
 def main():
     game = SlappaGame()
+    if DEBUG_SHOW_FPS:
+        game.time.advanced_timing = True
     game.state.add('game', GameState())
     game.state.add('title', TitleState())
     game.state.start('title')
