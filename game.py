@@ -9,6 +9,8 @@ class Game(object):
         pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
         pygame.init()
         pygame.display.set_caption(caption)
+        if GCW_ZERO:
+            pygame.mouse.set_visible(False)
         self.width = width
         self.height = height
 
