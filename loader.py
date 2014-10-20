@@ -17,4 +17,4 @@ class Loader(object):
 
     def image(self, key, path):
         if key not in self.images:
-            self.images[key] = pygame.image.load(path)#.convert()
+            self.images[key] = pygame.image.load(path).convert_alpha()
