@@ -12,5 +12,5 @@ class ScaleManager(object):
     def setup_scale(self, width, height):
         self.width = width
         self.height = height
-        self.scale = Point(float(self.game.width) / width,
-                           float(self.game.height) / height)
+        self.scale = Point(width / float(self.game.width),
+                           height / float(self.game.height))

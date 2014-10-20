@@ -10,8 +10,8 @@ class Image(object):
         self.__smoothed = True
         if key != '':
             self.__image = game.load.images[key]
-            self.__width = self.__image.get_width() * scale.x
-            self.__height = self.__image.get_height() * scale.y
+            self.__width = int(self.__image.get_width() * scale.x)
+            self.__height = int(self.__image.get_height() * scale.y)
             self.__set_scale()
         else:
             self.__image = None
