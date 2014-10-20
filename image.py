@@ -1,4 +1,3 @@
-import assets
 import pygame
 from point import *
 
@@ -10,7 +9,7 @@ class Image(object):
         self.__height = 0
         self.__smoothed = True
         if key != '':
-            self.__image = assets.images[key]
+            self.__image = game.load.images[key]
             self.__width = self.__image.get_width() * scale.x
             self.__height = self.__image.get_height() * scale.y
             self.__set_scale()

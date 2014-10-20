@@ -1,4 +1,3 @@
-import assets
 from animation import *
 from config import *
 from point import *
@@ -13,7 +12,7 @@ class Sprite(object):
                  crop=pygame.Rect(0, 0, 0, 0)):
         self.game = game
         if key != '':
-            self.image = assets.images[key]
+            self.image = game.load.images[key]
         else:
             self.image = None
 
@@ -23,16 +22,16 @@ class Sprite(object):
         self.crop.height *= scale.y
         if (crop.width == 0 or crop.height == 0) and key != '':
             self.crop = pygame.Rect(0, 0,
-                                    assets.images[key].get_width() * scale.x,
-                                    assets.images[key].get_height() * scale.y)
+                                    game.load.images[key].get_width() * scale.x,
+                                    game.load.images[key].get_height() * scale.y)
         self.width = self.crop.width
         self.height = self.crop.height
         if self.image is not None:
             self.image = pygame.transform.scale(
                 self.image,
                 (
-                    assets.images[key].get_width() * scale.x,
-                    assets.images[key].get_height() * scale.y))
+                    game.load.images[key].get_width() * scale.x,
+                    game.load.images[key].get_height() * scale.y))
 
         self.animations = AnimationManager()
 

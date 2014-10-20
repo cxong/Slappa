@@ -24,11 +24,11 @@ def load_sounds_from_folder(folder):
     return load_from_path("data/sounds/" + folder, load_sound)
 
 
-def load_things_from_folder(folder):
+def load_things_from_folder(game, folder):
     def load_thing(path):
         name = path[path.rfind("/") + 1:]
         try:
-            assets.images[name] = pygame.image.load(path)
+            game.load.image(name, path)
         except pygame.error:
             return None
         return name

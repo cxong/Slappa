@@ -22,21 +22,15 @@ class SlappaGame(Game):
         self.keys = Keyboard()
         self.joys = Joystick()
 
+        # Sounds
+        # TODO: lists of sounds
+        self.audio = {}
+
 
 # Title screen
 class TitleState(State):
     def __init__(self):
         super(TitleState, self).__init__()
-        assets.images['background'] = pygame.image.load("data/images/bg.png")
-        assets.images['ground'] = pygame.image.load("data/images/ground.png")
-        assets.images['logo'] = pygame.image.load("data/images/logo.png")
-        assets.images['gong'] = pygame.image.load("data/images/gong.png")
-        assets.images['keyboard'] = pygame.image.load("data/images/keyboard.png")
-        assets.images['xbox360'] = pygame.image.load("data/images/xbox360.png")
-        assets.images['gcw-zero'] = pygame.image.load("data/images/gcw-zero.png")
-        assets.sounds['gong'] = pygame.mixer.Sound("data/sounds/gong.ogg")
-        assets.fonts['font'] = pygame.font.Font("data/MedievalSharp.ttf", 32)
-        assets.fonts['big'] = pygame.font.Font("data/MedievalSharp.ttf", 72)
         # Don't detect input for a bit
         # To prevent capturing escape from game screen
         self.grace_timer = 30
@@ -46,6 +40,26 @@ class TitleState(State):
         self.gong = None
 
         def preload():
+            self.game.load.image('background', "data/images/bg.png")
+            self.game.load.image('ground', "data/images/ground.png")
+            self.game.load.image('logo', "data/images/logo.png")
+            self.game.load.image('gong', "data/images/gong.png")
+            self.game.load.image('keyboard', "data/images/keyboard.png")
+            self.game.load.image('xbox360', "data/images/xbox360.png")
+            self.game.load.image('gcw-zero', "data/images/gcw-zero.png")
+            self.game.load.audio('gong', "data/sounds/gong.ogg")
+            self.game.load.image('cat', "data/images/players/cat.png")
+            self.game.load.image('dog', "data/images/players/dog.png")
+            self.game.load.font('font', "data/MedievalSharp.ttf", 32)
+            self.game.load.font('big', "data/MedievalSharp.ttf", 72)
+
+            self.game.audio['hits'] = load_sounds_from_folder("hits")
+            self.game.load.audio('jump', "data/sounds/jump.ogg")
+            self.game.load.audio('land', "data/sounds/land.ogg")
+            self.game.audio['swings'] = load_sounds_from_folder("swings")
+            self.game.load.audio('meow', "data/sounds/meow.ogg")
+            self.game.load.audio('yelp', "data/sounds/yelp.ogg")
+
             pygame.mixer.music.load("data/sounds/asian strings.ogg")
             self.grace_timer = 30
         self.preload = preload
@@ -132,13 +146,13 @@ class TitleState(State):
 
             # Hit gong
             def gong_hit(g, h):
-                assets.sounds['gong'].play()
+                self.game.add.audio('gong').play()
                 self.state.start('game')
             physics.overlap(self.gong, self.hurt_boxes, gong_hit)
         self.update = update
 
         def draw(surface):
-            font = assets.fonts['big']
+            font = self.game.load.fonts['big']
             text = "Slappa!"
             size = font.size(text)
             surface.blit(font.render(text,
@@ -208,7 +222,7 @@ class HighScoreHelper(object):
                 self.is_entering = True
 
     def draw(self, surface):
-        font = assets.fonts['font']
+        font = self.game.load.fonts['font']
         # Headings
         line_height = 36
         y = 24
@@ -251,24 +265,18 @@ class GameState(State):
         self.players = None
         self.enemy_generator = None
         self.high_score_helper = None
-        # Sounds
-        assets.sounds['hits'] = load_sounds_from_folder("hits")
-        assets.sounds['jump'] = pygame.mixer.Sound("data/sounds/jump.ogg")
-        assets.sounds['land'] = pygame.mixer.Sound("data/sounds/land.ogg")
-        assets.sounds['swings'] = load_sounds_from_folder("swings")
-        assets.sounds['meow'] = pygame.mixer.Sound("data/sounds/meow.ogg")
-        assets.sounds['yelp'] = pygame.mixer.Sound("data/sounds/yelp.ogg")
-        assets.sounds['growls'] = load_sounds_from_folder("growls")
-        assets.sounds['deaths'] = load_sounds_from_folder("deaths")
 
-        # Images/templates
-        assets.images['explosion'] = pygame.image.load("data/images/explosion.png")
-        assets.images['cat'] = pygame.image.load("data/images/players/cat.png")
-        assets.images['dog'] = pygame.image.load("data/images/players/dog.png")
-        assets.images['zombie'] = pygame.image.load("data/images/enemies/zombie.png")
-        assets.images['monster'] = pygame.image.load(
-            "data/images/enemies/monster.png")
-        assets.images['flying'] = pygame.image.load("data/images/enemies/flying.png")
+        def preload():
+            # Sounds
+            self.game.audio['growls'] = load_sounds_from_folder("growls")
+            self.game.audio['deaths'] = load_sounds_from_folder("deaths")
+
+            # Images/templates
+            self.game.load.image('explosion', "data/images/explosion.png")
+            self.game.load.image('zombie', "data/images/enemies/zombie.png")
+            self.game.load.image('monster', "data/images/enemies/monster.png")
+            self.game.load.image('flying', "data/images/enemies/flying.png")
+        self.preload = preload
 
         def create():
             pygame.mixer.music.load("data/sounds/Blackmoor Ninjas.ogg")
@@ -344,7 +352,7 @@ class GameState(State):
 
             # Collisions
             def hit(x, y):
-                random.choice(assets.sounds['hits']).play()
+                random.choice(self.game.audio['hits']).play()
                 self.bubbles.add(Bubble(self.game, x, y))
 
             def enemy_hurt(e, h):
@@ -388,7 +396,7 @@ class GameState(State):
         self.update = update
 
         def draw(surface):
-            font = assets.fonts['font']
+            font = self.game.load.fonts['font']
             padding = 25
             players_alive = 0
             for i in range(len(self.players)):

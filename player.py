@@ -53,9 +53,9 @@ class Player(SimpleCharacter):
         self.health = 5
         self.out_of_bounds_kill = False
 
-        self.sounds['jump'] = assets.sounds['jump']
-        self.sounds['land'] = assets.sounds['land']
-        self.sounds['swings'] = assets.sounds['swings']
+        self.sounds['jump'] = game.load.sounds['jump']
+        self.sounds['land'] = game.load.sounds['land']
+        self.sounds['swings'] = game.audio['swings']
 
         self.hurt_boxes = hurt_boxes
 
@@ -65,8 +65,8 @@ class Player(SimpleCharacter):
         self.gravity = 0.00198
         self.jump_force = 0.7
 
-        self.sounds['hurts'] = [assets.sounds['meow']]
-        self.sounds['deaths'] = [assets.sounds['meow']]
+        self.sounds['hurts'] = [self.game.load.sounds['meow']]
+        self.sounds['deaths'] = [self.game.load.sounds['meow']]
 
     def init_dog(self):
         self.animations.animations['idle'].duration = 6
@@ -84,8 +84,8 @@ class Player(SimpleCharacter):
         self.friction = 0.0005
         self.hit_duration = 12
 
-        self.sounds['hurts'] = [assets.sounds['yelp']]
-        self.sounds['deaths'] = [assets.sounds['yelp']]
+        self.sounds['hurts'] = [self.game.load.sounds['yelp']]
+        self.sounds['deaths'] = [self.game.load.sounds['yelp']]
 
     def exists(self):
         # Players always exist

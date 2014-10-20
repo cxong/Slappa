@@ -1,11 +1,15 @@
 from group import *
 from image import *
+from sound import *
 from sprite import *
 
 
 class GameObjectFactory(object):
     def __init__(self, game):
         self.game = game
+
+    def audio(self, key):
+        return Sound(self.game, key)
 
     def group(self):
         return self.game.world.add(Group())

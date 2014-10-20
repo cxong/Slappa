@@ -1,5 +1,6 @@
 from game_object_factory import *
 from game_time import *
+from loader import *
 from scale_manager import *
 from state import *
 from world import *
@@ -16,6 +17,7 @@ class Game(object):
         self.height = height
 
         self.add = GameObjectFactory(self)
+        self.load = Loader()
         self.scale = ScaleManager(self)
         self.state = StateManager(self)
         self.time = Time()

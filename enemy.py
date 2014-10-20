@@ -23,9 +23,9 @@ class Enemy(SimpleCharacter):
         self.thing_group = things
         self.hit_offset = Point(0, -25)
 
-        self.sounds['swings'] = assets.sounds['growls']
-        self.sounds['hurts'] = assets.sounds['deaths']
-        self.sounds['deaths'] = assets.sounds['deaths']
+        self.sounds['swings'] = game.audio['growls']
+        self.sounds['hurts'] = game.audio['deaths']
+        self.sounds['deaths'] = game.audio['deaths']
 
     def init_zombie(self, game, x, y):
         super(Enemy, self).__init__(game, x, y, 'zombie', (64, 64))

@@ -9,7 +9,7 @@ class EnemyGenerator(object):
         self.max_enemies = 3
         self.enemies = enemies
         self.players = players
-        self.thing_keys = load_things_from_folder("things")
+        self.thing_keys = load_things_from_folder(game, "things")
         self.things = things
 
     def update(self, time):
