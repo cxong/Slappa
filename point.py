@@ -3,19 +3,28 @@ import math
 
 class Point(object):
     def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+        self.x = float(x)
+        self.y = float(y)
 
     def add(self, other):
         self.x += other.x
         self.y += other.y
         return self
 
+    def subtract(self, other):
+        self.x -= other.x
+        self.y -= other.y
+        return self
+
     def multiply(self, other):
-        return Point(self.x * other.x, self.y * other.y)
+        self.x *= other.x
+        self.y *= other.y
+        return self
 
     def divide(self, other):
-        return Point(self.x / other.x, self.y / other.y)
+        self.x /= other.x
+        self.y /= other.y
+        return self
 
     def set_magnitude(self, magnitude):
         return self.normalize().multiply(Point(magnitude, magnitude))

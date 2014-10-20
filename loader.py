@@ -13,7 +13,7 @@ class Loader(object):
 
     def font(self, key, path, size):
         if key not in self.fonts:
-            self.fonts[key] = pygame.font.Font(path, size)
+            self.fonts[key] = pygame.font.Font(path, int(size))
 
     def image(self, key, path):
         if key not in self.images:

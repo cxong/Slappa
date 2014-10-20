@@ -16,22 +16,24 @@ class Sprite(object):
         else:
             self.image = None
 
+        new_scale = Point(scale.x, scale.y)
+        new_scale.multiply(game.scale.scale)
         self.children = []
         self.crop = crop
-        self.crop.width *= scale.x
-        self.crop.height *= scale.y
+        self.crop.width = int(self.crop.width * new_scale.x)
+        self.crop.height = int(self.crop.height * new_scale.y)
         if (crop.width == 0 or crop.height == 0) and key != '':
             self.crop = pygame.Rect(0, 0,
-                                    game.load.images[key].get_width() * scale.x,
-                                    game.load.images[key].get_height() * scale.y)
+                                    int(game.load.images[key].get_width() * new_scale.x),
+                                    int(game.load.images[key].get_height() * new_scale.y))
         self.width = self.crop.width
         self.height = self.crop.height
         if self.image is not None:
             self.image = pygame.transform.scale(
                 self.image,
                 (
-                    game.load.images[key].get_width() * scale.x,
-                    game.load.images[key].get_height() * scale.y))
+                    int(game.load.images[key].get_width() * new_scale.x),
+                    int(game.load.images[key].get_height() * new_scale.y)))
 
         self.animations = AnimationManager()
 
@@ -118,13 +120,17 @@ class Sprite(object):
             if self.allow_rotations:
                 cropped = pygame.transform.rotate(cropped, self.rotation)
                 draw_size = [cropped.get_width(), cropped.get_height()]
-            surface.blit(cropped,
-                         (self.x - draw_size[0] * self.anchor.x,
-                         self.y - draw_size[1] * self.anchor.y))
+            point = Point(self.x, self.y)
+            point.multiply(self.game.scale.scale)
+            point.subtract(Point(draw_size[0] * self.anchor.x,
+                                 draw_size[1] * self.anchor.y))
+            surface.blit(cropped, (int(point.x), int(point.y)))
         if DEBUG_DRAW_SPRITE_ANCHOR:
+            point = Point(self.x, self.y)
+            point.multiply(self.game.scale.scale)
             pygame.draw.circle(surface,
                                (0, 0, 255),
-                               (int(self.x), int(self.y)),
+                               (int(point.x), int(point.y)),
                                3,
                                0)
 

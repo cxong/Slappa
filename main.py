@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import itertools
 import physics
 from bubble import *
 from enemy_generator import *
@@ -50,8 +49,10 @@ class TitleState(State):
             self.game.load.audio('gong', "data/sounds/gong.ogg")
             self.game.load.image('cat', "data/images/players/cat.png")
             self.game.load.image('dog', "data/images/players/dog.png")
-            self.game.load.font('font', "data/MedievalSharp.ttf", 32)
-            self.game.load.font('big', "data/MedievalSharp.ttf", 72)
+            self.game.load.font('font', "data/MedievalSharp.ttf",
+                                self.game.scale.scale.x * 32)
+            self.game.load.font('big', "data/MedievalSharp.ttf",
+                                self.game.scale.scale.x * 72)
 
             self.game.audio['hits'] = load_sounds_from_folder("hits")
             self.game.load.audio('jump', "data/sounds/jump.ogg")
@@ -77,8 +78,13 @@ class TitleState(State):
             ground.width = self.game.width
             ground.height = self.game.height - FLOOR_Y
             ground.anchor = Point(0, 0)
-            logo = self.game.add.image(self.game.width / 2, self.game.height / 2,
+            logo = self.game.add.image(self.game.width / 2,
+                                       self.game.height / 2,
                                        'logo')
+            self.game.add.text(self.game.width / 2, self.game.height / 2,
+                               'Slappa!',
+                               {'font': self.game.load.fonts['big'],
+                                'fill': (255, 140, 160)})
 
             padding = 24
             if GCW_ZERO:
@@ -151,17 +157,6 @@ class TitleState(State):
             physics.overlap(self.gong, self.hurt_boxes, gong_hit)
         self.update = update
 
-        def draw(surface):
-            font = self.game.load.fonts['big']
-            text = "Slappa!"
-            size = font.size(text)
-            surface.blit(font.render(text,
-                                     FONT_ANTIALIAS,
-                                     (255, 140, 160)),
-                         ((self.game.width - size[0]) / 2,
-                          (self.game.height - size[1]) / 2))
-        self.draw = draw
-
     def add_player(self, x, key):
         player = self.players.add(Player(self.game,
                                          x, FLOOR_Y,
@@ -181,9 +176,25 @@ class HighScoreHelper(object):
         self.is_entering = False
         self.last_key = None
         state.game.keys.on_down = self.enter_key
+        self.headings = Group()
+        # Headings
+        y = 24
+        name_x = 25
+        score_x = int(self.state.game.width * 0.4)
+        date_x = int(self.state.game.width * 0.7)
+        style = {'font': state.game.load.fonts['font'], 'fill': (255, 255, 0)}
+        text = Text(state.game, name_x, y, 'Name', style)
+        text.anchor = Point(0, 0)
+        self.headings.add(text)
+        text = Text(state.game, score_x, y, 'Score', style)
+        text.anchor = Point(0, 0)
+        self.headings.add(text)
+        text = Text(state.game, date_x, y, 'Date', style)
+        text.anchor = Point(0, 0)
+        self.headings.add(text)
 
     def __exit__(self, type, value, traceback):
-        self.game.keys.on_down = None
+        self.state.game.keys.on_down = None
 
     def enter_key(self, key, unicode):
         if self.score_index >= 0 and self.is_entering:
@@ -222,36 +233,42 @@ class HighScoreHelper(object):
                 self.is_entering = True
 
     def draw(self, surface):
-        font = self.game.load.fonts['font']
+        self.headings.draw(surface)
+        font = self.state.game.load.fonts['font']
         # Headings
         line_height = 36
         y = 24
         name_x = 25
         score_x = int(self.state.game.width * 0.4)
         date_x = int(self.state.game.width * 0.7)
-        surface.blit(font.render("Name", FONT_ANTIALIAS, (255, 255, 0)),
-                     (name_x, y))
-        surface.blit(font.render("Score", FONT_ANTIALIAS, (255, 255, 0)),
-                     (score_x, y))
-        surface.blit(font.render("Date", FONT_ANTIALIAS, (255, 255, 0)),
-                     (date_x, y))
         y += line_height
+        style_others = {'font': self.state.game.load.fonts['font'],
+                        'fill': (255, 255, 255)}
+        style_self = {'font': self.state.game.load.fonts['font'],
+                      'fill': (0, 255, 0)}
         i = 0
         for score in self.top_scores:
             # Name
             name = score[1][:]
-            color = (255, 255, 255)
+            style = style_others
             if self.is_entering and i == self.score_index:
                 name += '_'
             if i == self.score_index:
-                color = (0, 255, 0)
-            surface.blit(font.render(name, FONT_ANTIALIAS, color), (name_x, y))
+                style = style_self
+            text = Text(self.state.game, name_x, y, name, style)
+            text.anchor = Point(0, 0)
+            text.draw(surface)
             # Score
-            surface.blit(font.render(str(score[0]), FONT_ANTIALIAS, color), (score_x, y))
+            text = Text(self.state.game, score_x, y, str(score[0]), style)
+            text.anchor = Point(0, 0)
+            text.draw(surface)
             # Date
-            surface.blit(font.render(score[2], FONT_ANTIALIAS, color), (date_x, y))
+            text = Text(self.state.game, date_x, y, score[2], style)
+            text.anchor = Point(0, 0)
+            text.draw(surface)
             i += 1
             y += line_height
+
 
 # Game state
 class GameState(State):
@@ -399,29 +416,35 @@ class GameState(State):
             font = self.game.load.fonts['font']
             padding = 25
             players_alive = 0
+
             for i in range(len(self.players)):
                 player = self.players[i]
-                x = padding
+                text = Text(self.state.game,
+                            padding, self.game.height - padding,
+                            "HP: " + str(player.health),
+                            {'font': font, 'fill': (0, 255, 0)})
+                text.anchor = Point(0, 1)
                 if i == 1:
-                    x = self.game.width - 100 - padding
-                surface.blit(font.render("HP: " + str(player.health),
-                                         FONT_ANTIALIAS,
-                                         (0, 255, 0)),
-                             (x, self.game.height - 25 - padding))
+                    text.x = self.game.width - padding
+                    text.anchor.x = 1
+                text.draw(surface)
                 if player.health > 0:
                     players_alive += 1
             if players_alive == 0:
                 self.high_score_helper.draw(surface)
             else:
-                surface.blit(font.render("Score: " + str(self.score),
-                                         FONT_ANTIALIAS,
-                                         (255, 255, 0)),
-                             (self.game.width / 2 - 100, 50))
+                text = Text(self.state.game,
+                            self.game.width / 2, 50,
+                            "Score: " + str(self.score),
+                            {'font': font, 'fill': (255, 255, 0)})
+                text.draw(surface)
             if DEBUG_SHOW_FPS:
-                surface.blit(font.render("FPS: " + str(self.game.time.fps),
-                                         FONT_ANTIALIAS,
-                                         (0, 0, 0)),
-                             (self.game.width - 200, 50))
+                text = Text(self.state.game,
+                            self.game.width - padding, padding,
+                            "FPS: %.1f" % self.game.time.fps,
+                            {'font': font, 'fill': (0, 0, 0)})
+                text.anchor = Point(1, 0)
+                text.draw(surface)
         self.draw = draw
 
     def add_player(self, x, key, index):

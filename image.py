@@ -1,4 +1,5 @@
 import pygame
+from config import *
 from point import *
 
 
@@ -10,8 +11,10 @@ class Image(object):
         self.__smoothed = True
         if key != '':
             self.__image = game.load.images[key]
-            self.__width = int(self.__image.get_width() * scale.x)
-            self.__height = int(self.__image.get_height() * scale.y)
+            new_scale = Point(scale.x, scale.y)
+            new_scale.multiply(game.scale.scale)
+            self.__width = int(self.__image.get_width() * new_scale.x)
+            self.__height = int(self.__image.get_height() * new_scale.y)
             self.__set_scale()
         else:
             self.__image = None
@@ -34,14 +37,14 @@ class Image(object):
         return self.__width
     @width.setter
     def width(self, value):
-        self.__width = int(value)
+        self.__width = int(value * self.game.scale.scale.x)
         self.__set_scale()
     @property
     def height(self):
         return self.__height
     @height.setter
     def height(self, value):
-        self.__height = int(value)
+        self.__height = int(value * self.game.scale.scale.y)
         self.__set_scale()
     @property
     def smoothed(self):
@@ -63,9 +66,19 @@ class Image(object):
     def draw(self, surface):
         if self.image is not None:
             self.image.set_alpha(int(self.alpha * 255))
-            surface.blit(self.image,
-                         (self.x - self.image.get_width() * self.anchor.x,
-                          self.y - self.image.get_height() * self.anchor.y))
+            point = Point(self.x, self.y)
+            point.multiply(self.game.scale.scale)
+            point.subtract(Point(self.width * self.anchor.x,
+                                 self.height * self.anchor.y))
+            surface.blit(self.image, (int(point.x), int(point.y)))
+        if DEBUG_DRAW_SPRITE_ANCHOR:
+            point = Point(self.x, self.y)
+            point.multiply(self.game.scale.scale)
+            pygame.draw.circle(surface,
+                               (0, 0, 255),
+                               (int(point.x), int(point.y)),
+                               3,
+                               0)
 
     def exists(self):
         return True
