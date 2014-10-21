@@ -10,13 +10,13 @@ class SimpleCharacter(Sprite):
                                               Point(2, 2),
                                               rect)
 
-        self.animations.animations['idle'] = Animation([], 1, True)
-        self.animations.animations['walk'] = Animation([], 1, True)
-        self.animations.animations['hit'] = Animation([], 1)
-        self.animations.animations['hit_up'] = Animation([], 1)
-        self.animations.animations['hurt'] = Animation([], 1)
-        self.animations.animations['die'] = Animation([], 1)
-        self.animations.animations['jump'] = Animation([], 1)
+        self.animations.animations['idle'] = Animation(game, [], 1, True)
+        self.animations.animations['walk'] = Animation(game, [], 1, True)
+        self.animations.animations['hit'] = Animation(game, [], 1)
+        self.animations.animations['hit_up'] = Animation(game, [], 1)
+        self.animations.animations['hurt'] = Animation(game, [], 1)
+        self.animations.animations['die'] = Animation(game, [], 1)
+        self.animations.animations['jump'] = Animation(game, [], 1)
 
         self.is_hitting = False
         self.is_hurt = False
@@ -67,7 +67,7 @@ class SimpleCharacter(Sprite):
             self.dx = 0
 
     def land(self):
-        self.y = FLOOR_Y
+        self.y = self.game.config.FLOOR_Y
         if self.health > 0:
             if self.is_jumping:
                 if self.sounds['land'] is not None:
@@ -133,7 +133,7 @@ class SimpleCharacter(Sprite):
         self.dx = clamp(self.dx, -self.max_speed, self.max_speed)
 
     def is_on_ground(self):
-        return self.y >= FLOOR_Y
+        return self.y >= self.game.config.FLOOR_Y
 
     def exists(self):
         return self.is_dying or super(SimpleCharacter, self).exists()

@@ -25,7 +25,7 @@ class Text(object):
         pass
 
     def draw(self, surface):
-        if DEBUG_NO_FONTS:
+        if self.game.config.DEBUG_NO_FONTS:
             return
         font = self.style['font']
         size = font.size(self.text)
@@ -34,10 +34,10 @@ class Text(object):
         point.subtract(Point(size[0] * self.anchor.x,
                              size[1] * self.anchor.y))
         surface.blit(font.render(self.text,
-                                 FONT_ANTIALIAS,
+                                 self.game.config.FONT_ANTIALIAS,
                                  self.style['fill']),
                      (int(point.x), int(point.y)))
-        if DEBUG_DRAW_SPRITE_ANCHOR:
+        if self.game.config.DEBUG_DRAW_SPRITE_ANCHOR:
             point = Point(self.x, self.y)
             point.multiply(self.game.scale.scale)
             pygame.draw.circle(surface,

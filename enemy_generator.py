@@ -13,7 +13,7 @@ class EnemyGenerator(object):
         self.things = things
 
     def update(self, time):
-        self.spawn_counter -= ANIM_FRAME_RATE / FRAME_RATE
+        self.spawn_counter -= self.game.config.ANIM_FRAME_RATE / self.game.config.FRAME_RATE
         if self.spawn_counter <= 0:
             self.spawn_counter = self.spawn_period
             if len(self.enemies.children) < self.max_enemies:
@@ -22,11 +22,12 @@ class EnemyGenerator(object):
                     'monster',
                     'flying'
                 ])
-                y = FLOOR_Y
+                y = self.game.config.FLOOR_Y
 
                 if choice == 'flying':
                     pad = self.game.height * 0.16
-                    y = random.randint(int(pad), int(FLOOR_Y - pad))
+                    y = random.randint(int(pad),
+                                       int(self.game.config.FLOOR_Y - pad))
                 self.enemies.add(Enemy(
                     self.game,
                     random.choice([0, self.game.width]),

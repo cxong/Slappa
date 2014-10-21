@@ -28,7 +28,7 @@ class StateManager(object):
             if self.screen is None:
                 self.screen = pygame.display.set_mode(
                     [self.game.scale.width, self.game.scale.height],
-                    pygame.DOUBLEBUF | pygame.HWSURFACE | SDL_FLAGS)
+                    pygame.DOUBLEBUF | pygame.HWSURFACE | self.game.config.SDL_FLAGS)
             state.start(self.screen)
             # At this stage, we either want to quit or we're changing to a new
             # state
@@ -74,7 +74,7 @@ class State(object):
             screen.blit(screen_buf, (0, 0))
             pygame.display.flip()
             self.game.time.update(clock.get_time())
-            clock.tick(FRAME_RATE)
+            clock.tick(self.game.config.FRAME_RATE)
         # Remove all stuff from stage
         self.game.world.destroy()
         self.started = False

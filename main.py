@@ -74,9 +74,9 @@ class TitleState(State):
             bg.smoothed = False
             bg.width = self.game.width
             bg.height = self.game.height
-            ground = self.game.add.image(0, FLOOR_Y, 'ground')
+            ground = self.game.add.image(0, self.game.config.FLOOR_Y, 'ground')
             ground.width = self.game.width
-            ground.height = self.game.height - FLOOR_Y
+            ground.height = self.game.height - self.game.config.FLOOR_Y
             ground.anchor = Point(0, 0)
             logo = self.game.add.image(self.game.width / 2,
                                        self.game.height / 2,
@@ -102,7 +102,7 @@ class TitleState(State):
             joy.anchor = Point(1, 1)
 
             self.gong = self.game.add.sprite(self.game.width / 2,
-                                             FLOOR_Y,
+                                             self.game.config.FLOOR_Y,
                                              'gong',
                                              Point(2, 2))
             self.gong.anchor.y = 1
@@ -116,7 +116,7 @@ class TitleState(State):
         self.create = create
 
         def update(time):
-            self.grace_timer -= ANIM_FRAME_RATE / FRAME_RATE
+            self.grace_timer -= self.game.config.ANIM_FRAME_RATE / self.game.config.FRAME_RATE
             if self.grace_timer <= 0:
                 self.game.keys.update()
                 if self.game.keys.is_escape():
@@ -159,7 +159,7 @@ class TitleState(State):
 
     def add_player(self, x, key):
         player = self.players.add(Player(self.game,
-                                         x, FLOOR_Y,
+                                         x, self.game.config.FLOOR_Y,
                                          key,
                                          self.hurt_boxes))
         player.health = 0
@@ -306,9 +306,9 @@ class GameState(State):
             bg.width = self.game.width
             bg.height = self.game.height
 
-            ground = self.game.add.image(0, FLOOR_Y, 'ground')
+            ground = self.game.add.image(0, self.game.config.FLOOR_Y, 'ground')
             ground.width = self.game.width
-            ground.height = self.game.height - FLOOR_Y
+            ground.height = self.game.height - self.game.config.FLOOR_Y
             ground.anchor = Point(0, 0)
 
             self.bubbles = self.game.add.group()
@@ -438,7 +438,7 @@ class GameState(State):
                             "Score: " + str(self.score),
                             {'font': font, 'fill': (255, 255, 0)})
                 text.draw(surface)
-            if DEBUG_SHOW_FPS:
+            if self.game.config.DEBUG_SHOW_FPS:
                 text = Text(self.state.game,
                             self.game.width - padding, padding,
                             "FPS: %.1f" % self.game.time.fps,
@@ -449,7 +449,7 @@ class GameState(State):
 
     def add_player(self, x, key, index):
         player = self.players.add(Player(self.game,
-                                         x, FLOOR_Y,
+                                         x, self.game.config.FLOOR_Y,
                                          key,
                                          self.hurt_boxes))
         if not self.game.players_joined[index]:
@@ -460,7 +460,7 @@ class GameState(State):
 
 def main():
     game = SlappaGame()
-    if DEBUG_SHOW_FPS:
+    if game.config.DEBUG_SHOW_FPS:
         game.time.advanced_timing = True
     game.state.add('game', GameState())
     game.state.add('title', TitleState())

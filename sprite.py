@@ -67,7 +67,7 @@ class Sprite(object):
         self.x += self.dx * time
         self.y += self.dy * time
         if self.gravity != 0.0:
-            if self.y > FLOOR_Y:
+            if self.y > self.game.config.FLOOR_Y:
                 self.land()
         if self.allow_rotations:
             self.rotation += self.angular_velocity * time
@@ -89,14 +89,14 @@ class Sprite(object):
         pass
 
     def draw(self, surface):
-        if DEBUG_DRAW_SPRITE_BOUNDS:
+        if self.game.config.DEBUG_DRAW_SPRITE_BOUNDS:
             s = pygame.Surface((self.width, self.height))
             s.set_alpha(128)
             s.fill((0, 255, 0))
             surface.blit(s, (
                 self.x - self.width * self.anchor.x,
                 self.y - self.height * self.anchor.y))
-        if DEBUG_DRAW_SPRITE_BODY:
+        if self.game.config.DEBUG_DRAW_SPRITE_BODY:
             s = pygame.Surface((self.body.width, self.body.height))
             s.set_alpha(128)
             s.fill((255, 0, 255))
@@ -117,7 +117,7 @@ class Sprite(object):
             # Check if we need to offset a bit due to rotation
             # This is because rotations can cause the surface to enlarge
             draw_size = [self.width, self.height]
-            if self.allow_rotations and not DEBUG_NO_ROTATIONS:
+            if self.allow_rotations and not self.game.config.DEBUG_NO_ROTATIONS:
                 cropped = pygame.transform.rotate(cropped, self.rotation)
                 draw_size = [cropped.get_width(), cropped.get_height()]
             point = Point(self.x, self.y)
@@ -125,7 +125,7 @@ class Sprite(object):
             point.subtract(Point(draw_size[0] * self.anchor.x,
                                  draw_size[1] * self.anchor.y))
             surface.blit(cropped, (int(point.x), int(point.y)))
-        if DEBUG_DRAW_SPRITE_ANCHOR:
+        if self.game.config.DEBUG_DRAW_SPRITE_ANCHOR:
             point = Point(self.x, self.y)
             point.multiply(self.game.scale.scale)
             pygame.draw.circle(surface,

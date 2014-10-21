@@ -3,7 +3,8 @@ from config import *
 
 
 class Animation(object):
-    def __init__(self, frames, duration=1, loop=False):
+    def __init__(self, game, frames, duration=1, loop=False):
+        self.game = game
         self.frames = frames[:]
         self.duration = duration
         self.loop = loop
@@ -26,7 +27,7 @@ class Animation(object):
     def update(self):
         if not self.is_playing:
             return
-        self.sub_counter += ANIM_FRAME_RATE / FRAME_RATE
+        self.sub_counter += self.game.config.ANIM_FRAME_RATE / self.game.config.FRAME_RATE
         while self.sub_counter >= self.duration:
             self.sub_counter -= self.duration
             self.counter += 1

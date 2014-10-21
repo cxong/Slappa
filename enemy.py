@@ -33,11 +33,11 @@ class Enemy(SimpleCharacter):
         self.body.y = -35
         self.anchor.y = 0.95
 
-        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
-        self.animations.animations['walk'] = Animation([8, 9, 10, 11], 20, True)
-        self.animations.animations['hit'] = Animation([17, 18, 19], 7)
-        self.animations.animations['hurt'] = Animation([25, 26], 20)
-        self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 3)
+        self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3], 20, True)
+        self.animations.animations['walk'] = Animation(game, [8, 9, 10, 11], 20, True)
+        self.animations.animations['hit'] = Animation(game, [17, 18, 19], 7)
+        self.animations.animations['hurt'] = Animation(game, [25, 26], 20)
+        self.animations.animations['die'] = Animation(game, [25, 26, 27, 28, 29, 30], 3)
 
         self.health = 2
         self.speed = 0.1
@@ -49,12 +49,12 @@ class Enemy(SimpleCharacter):
         self.body.y = -25
         self.anchor.y = 0.84
 
-        self.animations.animations['idle'] = Animation([0, 1, 2, 3], 20, True)
-        self.animations.animations['walk'] = Animation([8, 9, 10, 11, 12], 20, True)
-        self.animations.animations['jump'] = Animation([43, 44, 45, 46, 45, 46, 45, 46], 14)
-        self.animations.animations['hit'] = Animation([16, 17, 18, 19, 20, 21], 4)
-        self.animations.animations['hurt'] = Animation([25, 26], 20)
-        self.animations.animations['die'] = Animation([25, 26, 27, 28, 29, 30], 3)
+        self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3], 20, True)
+        self.animations.animations['walk'] = Animation(game, [8, 9, 10, 11, 12], 20, True)
+        self.animations.animations['jump'] = Animation(game, [43, 44, 45, 46, 45, 46, 45, 46], 14)
+        self.animations.animations['hit'] = Animation(game, [16, 17, 18, 19, 20, 21], 4)
+        self.animations.animations['hurt'] = Animation(game, [25, 26], 20)
+        self.animations.animations['die'] = Animation(game, [25, 26, 27, 28, 29, 30], 3)
 
         self.health = 2
         self.speed = 0.1
@@ -68,11 +68,11 @@ class Enemy(SimpleCharacter):
 
         #self.anchor.y = 0.84
 
-        self.animations.animations['idle'] = Animation([0, 1, 2, 3, 4], 10, True)
-        self.animations.animations['walk'] = Animation([0, 1, 2, 3, 4], 10, True)
-        self.animations.animations['hit'] = Animation([9, 10, 11, 12], 5)
-        self.animations.animations['hurt'] = Animation([17, 18], 20)
-        self.animations.animations['die'] = Animation([17, 18, 19, 20, 21, 22, 23], 3)
+        self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3, 4], 10, True)
+        self.animations.animations['walk'] = Animation(game, [0, 1, 2, 3, 4], 10, True)
+        self.animations.animations['hit'] = Animation(game, [9, 10, 11, 12], 5)
+        self.animations.animations['hurt'] = Animation(game, [17, 18], 20)
+        self.animations.animations['die'] = Animation(game, [17, 18, 19, 20, 21, 22, 23], 3)
 
         self.health = 1
         self.speed = 0.2
@@ -80,11 +80,11 @@ class Enemy(SimpleCharacter):
 
     def update(self, time):
         super(Enemy, self).update(time)
-        if self.y > FLOOR_Y:
-            self.y = FLOOR_Y
+        if self.y > self.game.config.FLOOR_Y:
+            self.y = self.game.config.FLOOR_Y
         if self.is_hitting:
             return
-        self.delay -= ANIM_FRAME_RATE / FRAME_RATE
+        self.delay -= self.game.config.ANIM_FRAME_RATE / self.game.config.FRAME_RATE
         # Perform the action
         if self.action == 'idle':
             # Idle; don't do anything
@@ -146,9 +146,11 @@ class Enemy(SimpleCharacter):
         player_center = player.get_body_center()
         # Randomly offset target
         player_center.add(Point(
-            random.uniform(-ENEMY_TARGET_OFFSET, ENEMY_TARGET_OFFSET),
-            random.uniform(-ENEMY_TARGET_OFFSET, ENEMY_TARGET_OFFSET)))
-        player_center.y = min([FLOOR_Y, player_center.y])
+            random.uniform(-self.game.config.ENEMY_TARGET_OFFSET,
+                           self.game.config.ENEMY_TARGET_OFFSET),
+            random.uniform(-self.game.config.ENEMY_TARGET_OFFSET,
+                           self.game.config.ENEMY_TARGET_OFFSET)))
+        player_center.y = min([self.game.config.FLOOR_Y, player_center.y])
         self.thing_group.add(Thing(self.game,
                                    self.x + self.hit_offset.x,
                                    self.y + self.hit_offset.y,

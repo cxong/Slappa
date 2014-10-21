@@ -10,7 +10,7 @@ class Bubble(Image):
         self.__exists = True
 
     def update(self, time):
-        self.count -= ANIM_FRAME_RATE / FRAME_RATE
+        self.count -= self.game.config.ANIM_FRAME_RATE / self.game.config.FRAME_RATE
         if self.count <= 0:
             self.__exists = False
 

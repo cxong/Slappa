@@ -11,17 +11,18 @@ class Game(object):
         pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
         pygame.init()
         pygame.display.set_caption(caption)
-        if GCW_ZERO:
-            pygame.mouse.set_visible(False)
         self.width = width
         self.height = height
 
         self.add = GameObjectFactory(self)
+        self.config = Config()
         self.load = Loader()
         self.scale = ScaleManager(self)
         self.state = StateManager(self)
         self.time = Time()
         self.world = World()
+        if GCW_ZERO:
+            pygame.mouse.set_visible(False)
 
     def __exit__(self, type, value, traceback):
         pygame.mixer.quit()

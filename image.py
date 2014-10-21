@@ -71,7 +71,7 @@ class Image(object):
             point.subtract(Point(self.width * self.anchor.x,
                                  self.height * self.anchor.y))
             surface.blit(self.image, (int(point.x), int(point.y)))
-        if DEBUG_DRAW_SPRITE_ANCHOR:
+        if self.game.config.DEBUG_DRAW_SPRITE_ANCHOR:
             point = Point(self.x, self.y)
             point.multiply(self.game.scale.scale)
             pygame.draw.circle(surface,

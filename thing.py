@@ -26,7 +26,7 @@ class Thing(Sprite):
             ed = Point(enemy.x - self.x, enemy.y - self.y)
             ed.normalize()
             half_angle = math.cos(
-                math.radians(DEFLECTION_AUTOAIM_ANGLE / 2))
+                math.radians(self.game.config.DEFLECTION_AUTOAIM_ANGLE / 2))
             if d.dot_product(ed) > half_angle:
                 in_arc_enemies.append(enemy)
         # use closest enemy
@@ -37,6 +37,6 @@ class Thing(Sprite):
                     Point(self.x, self.y)))
             d = Point(enemy.x + enemy.body.x - self.x,
                       enemy.y + enemy.body.y - self.y).normalize()
-        d.set_magnitude(Thing.SPEED * DEFLECTION_SPEED_SCALE)
+        d.set_magnitude(Thing.SPEED * self.game.config.DEFLECTION_SPEED_SCALE)
         self.dx, self.dy = d.x, d.y
         self.is_enemy = False
