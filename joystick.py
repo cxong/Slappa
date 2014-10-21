@@ -1,19 +1,18 @@
 import os
 import platform
-import pygame
 import sys
+from config import *
 
 
 class Joystick(object):
-    def __init__(self, game):
-        self.game = game
+    def __init__(self):
         self.joystick = None
         self.detect_period = 300
+        self.num_joysticks = 0
         self.detect_joystick()
         self._dir = 0
         self._is_jump = False
         self._hit = ""
-        self.num_joystics = 0
         if platform.system() == 'Windows':
             # Workaround for stupid pygame leaving debug in
             sys.stdout = os.devnull
@@ -22,6 +21,7 @@ class Joystick(object):
     def detect_joystick(self):
         self.detect_period = 300
         pygame.joystick.init()
+        self.num_joysticks = 0
         for i in range(pygame.joystick.get_count()):
             # Find compatible joystick
             joystick = pygame.joystick.Joystick(i)
@@ -29,11 +29,11 @@ class Joystick(object):
             if (joystick.get_numbuttons() >= 4 and
                     (joystick.get_numaxes() >= 2 or
                      joystick.get_numhats() > 0)):
-                self.num_joystics += 1
+                self.num_joysticks += 1
                 # GCW Zero uses joystick 1 for its analog
                 # Ignore it
                 # TODO: use GCW Zero analog
-                if not self.game.config.GCW_ZERO or self.num_joystics > 1:
+                if not GCW_ZERO or self.num_joysticks > 1:
                     self.joystick = joystick
 
     def update(self):

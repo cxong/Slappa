@@ -19,7 +19,7 @@ class SlappaGame(Game):
 
         # Input devices
         self.keys = Keyboard()
-        self.joys = Joystick(self)
+        self.joys = Joystick()
 
         # Sounds
         # TODO: lists of sounds
