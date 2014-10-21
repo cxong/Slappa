@@ -150,7 +150,8 @@ class Enemy(SimpleCharacter):
                            self.game.config.ENEMY_TARGET_OFFSET),
             random.uniform(-self.game.config.ENEMY_TARGET_OFFSET,
                            self.game.config.ENEMY_TARGET_OFFSET)))
-        player_center.y = min([self.game.config.FLOOR_Y, player_center.y])
+        player_center.y = min([self.game.config.FLOOR_Y + player.body.y,
+                               player_center.y])
         self.thing_group.add(Thing(self.game,
                                    self.x + self.hit_offset.x,
                                    self.y + self.hit_offset.y,

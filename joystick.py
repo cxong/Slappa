@@ -5,13 +5,15 @@ import sys
 
 
 class Joystick(object):
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.joystick = None
         self.detect_period = 300
         self.detect_joystick()
         self._dir = 0
         self._is_jump = False
         self._hit = ""
+        self.num_joystics = 0
         if platform.system() == 'Windows':
             # Workaround for stupid pygame leaving debug in
             sys.stdout = os.devnull
@@ -27,7 +29,12 @@ class Joystick(object):
             if (joystick.get_numbuttons() >= 4 and
                     (joystick.get_numaxes() >= 2 or
                      joystick.get_numhats() > 0)):
-                self.joystick = joystick
+                self.num_joystics += 1
+                # GCW Zero uses joystick 1 for its analog
+                # Ignore it
+                # TODO: use GCW Zero analog
+                if not self.game.config.GCW_ZERO or self.num_joystics > 1:
+                    self.joystick = joystick
 
     def update(self):
         self._dir = 0

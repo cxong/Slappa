@@ -50,7 +50,7 @@ class Player(SimpleCharacter):
         self.body.width = self.width * 0.05
         self.body.height = self.height * 0.2
 
-        self.health = 5
+        self.health = 3
         self.out_of_bounds_kill = False
 
         self.sounds['jump'] = game.load.sounds['jump']

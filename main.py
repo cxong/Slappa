@@ -19,7 +19,7 @@ class SlappaGame(Game):
 
         # Input devices
         self.keys = Keyboard()
-        self.joys = Joystick()
+        self.joys = Joystick(self)
 
         # Sounds
         # TODO: lists of sounds
@@ -192,6 +192,7 @@ class HighScoreHelper(object):
         text = Text(state.game, date_x, y, 'Date', style)
         text.anchor = Point(0, 0)
         self.headings.add(text)
+        self.cursor_blink = 10
 
     def __exit__(self, type, value, traceback):
         self.state.game.keys.on_down = None
@@ -199,13 +200,52 @@ class HighScoreHelper(object):
     def enter_key(self, key, unicode):
         if self.score_index >= 0 and self.is_entering:
             score = self.top_scores[self.score_index]
-            if pygame.K_a <= key <= pygame.K_z:
-                score[1] += unicode
-            elif key == pygame.K_BACKSPACE and len(score[1]) > 0:
+            if GCW_ZERO:
+                # Accept up/down, backspace, or enter
+                if key == pygame.K_UP:
+                    self.cycle_letter(1)
+                elif key == pygame.K_DOWN:
+                    self.cycle_letter(-1)
+                elif key == pygame.K_LALT:
+                    self.backspace()
+                elif key == pygame.K_LCTRL:
+                    # If we're full, end
+                    if len(score[1]) >= 3:
+                        self.end()
+                    else:
+                        # Else, add a letter
+                        score[1] += 'A'
+                # Add the first letter
+                if len(score[1]) == 0:
+                    score[1] = 'A'
+            else:
+                if pygame.K_a <= key <= pygame.K_z:
+                    score[1] += unicode
+                elif key == pygame.K_BACKSPACE:
+                    self.backspace()
+                elif key == pygame.K_RETURN or key == pygame.K_KP_ENTER:
+                    self.end()
+
+    def end(self):
+        if self.score_index >= 0 and self.is_entering:
+            score = self.top_scores[self.score_index]
+            self.is_entering = False
+            self.high_scores.add(score[0], score[1])
+
+    def backspace(self):
+        if self.score_index >= 0 and self.is_entering:
+            score = self.top_scores[self.score_index]
+            if len(score[1]) > 0:
                 score[1] = score[1][:-1]
-            elif key == pygame.K_RETURN or key == pygame.K_KP_ENTER:
-                self.is_entering = False
-                self.high_scores.add(score[0], score[1])
+
+    def cycle_letter(self, direction):
+        if self.score_index >= 0 and self.is_entering:
+            score = self.top_scores[self.score_index]
+            score[1] = score[1][:-1] + chr(ord(score[1][-1]) + direction)
+            if score[1][-1] > 'Z':
+                score[1] = score[1][:-1] + 'A'
+            if score[1][-1] < 'A':
+                score[1] = score[1][:-1] + 'Z'
 
     def update(self):
         # Check for game end and high score
@@ -231,6 +271,11 @@ class HighScoreHelper(object):
                                         self.high_scores.get_date()])
             if self.score_index >= 0:
                 self.is_entering = True
+                if GCW_ZERO:
+                    score = self.top_scores[self.score_index]
+                    # Add the first letter
+                    if len(score[1]) == 0:
+                        score[1] = 'A'
 
     def draw(self, surface):
         self.headings.draw(surface)
@@ -251,8 +296,11 @@ class HighScoreHelper(object):
             # Name
             name = score[1][:]
             style = style_others
-            if self.is_entering and i == self.score_index:
+            if self.is_entering and i == self.score_index and self.cursor_blink > 0:
                 name += '_'
+            self.cursor_blink -= 1
+            if self.cursor_blink < -10:
+                self.cursor_blink = 10
             if i == self.score_index:
                 style = style_self
             text = Text(self.state.game, name_x, y, name, style)

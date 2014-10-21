@@ -22,6 +22,7 @@ class Sprite(object):
         self.crop = crop
         self.crop.width = int(self.crop.width * new_scale.x)
         self.crop.height = int(self.crop.height * new_scale.y)
+        self.cropped_image = None
         if (crop.width == 0 or crop.height == 0) and key != '':
             self.crop = pygame.Rect(0, 0,
                                     int(game.load.images[key].get_width() * new_scale.x),
@@ -34,6 +35,7 @@ class Sprite(object):
                 (
                     int(game.load.images[key].get_width() * new_scale.x),
                     int(game.load.images[key].get_height() * new_scale.y)))
+            self.cropped_image = pygame.Surface(self.crop.size).convert_alpha()
 
         self.animations = AnimationManager()
 
@@ -106,21 +108,20 @@ class Sprite(object):
                             self.body.y - self.body.height / 2))
             surface.blit(s, (int(point.x), int(point.y)))
         if self.image is not None:
-            cropped = pygame.Surface(self.crop.size)
-            cropped.fill((255, 0, 255, 0))
-            cropped.set_colorkey((255, 0, 255, 0))
+            self.cropped_image.fill((0, 0, 0, 0))
             if self.alpha < 1.0:
-                cropped.set_alpha(int(self.alpha * 255))
+                self.cropped_image.set_alpha(int(self.alpha * 255))
             crop = self.animations.get_crop(self.crop.size,
                                             self.image.get_width())
-            cropped.blit(self.image, (0, 0), crop)
-            cropped = pygame.transform.flip(cropped, self.flip_x, self.flip_y)
+            self.cropped_image.blit(self.image, (0, 0), crop)
+            self.cropped_image = pygame.transform.flip(self.cropped_image, self.flip_x, self.flip_y)
 
             # Check if we need to offset a bit due to rotation
             # This is because rotations can cause the surface to enlarge
             draw_size = [self.width, self.height]
+            cropped = self.cropped_image
             if self.allow_rotations and not self.game.config.DEBUG_NO_ROTATIONS:
-                cropped = pygame.transform.rotate(cropped, self.rotation)
+                cropped = pygame.transform.rotate(self.cropped_image, self.rotation)
                 draw_size = [cropped.get_width(), cropped.get_height()]
             point = Point(self.x, self.y)
             point.multiply(self.game.scale.scale)

@@ -14,7 +14,7 @@ class Config(object):
     FONT_ANTIALIAS = True
     SDL_FLAGS = 0
     if GCW_ZERO:
-        FRAME_RATE = 60
+        FRAME_RATE = 30
         FONT_ANTIALIAS = False
         SDL_FLAGS = pygame.FULLSCREEN
     DEFLECTION_AUTOAIM_ANGLE = 45
