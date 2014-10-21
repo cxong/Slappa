@@ -1,4 +1,3 @@
-import pygame
 from config import *
 
 
@@ -27,8 +26,9 @@ class StateManager(object):
         while True:
             state = self.active_state
             if self.screen is None:
-                self.screen = pygame.display.set_mode([self.game.scale.width,
-                                                       self.game.scale.height])
+                self.screen = pygame.display.set_mode(
+                    [self.game.scale.width, self.game.scale.height],
+                    pygame.DOUBLEBUF | pygame.HWSURFACE | SDL_FLAGS)
             state.start(self.screen)
             # At this stage, we either want to quit or we're changing to a new
             # state
