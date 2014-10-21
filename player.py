@@ -48,7 +48,7 @@ class Player(SimpleCharacter):
         self.anchor.y = 0.84
         self.body.y = -25
         self.body.width = self.width * 0.05
-        self.body.height = self.height * 0.05
+        self.body.height = self.height * 0.2
 
         self.health = 5
         self.out_of_bounds_kill = False

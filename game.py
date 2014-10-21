@@ -8,7 +8,7 @@ from world import *
 
 class Game(object):
     def __init__(self, caption, width, height):
-        pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
+        pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=1024)
         pygame.init()
         pygame.display.set_caption(caption)
         self.width = width
