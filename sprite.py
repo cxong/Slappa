@@ -117,7 +117,7 @@ class Sprite(object):
             # Check if we need to offset a bit due to rotation
             # This is because rotations can cause the surface to enlarge
             draw_size = [self.width, self.height]
-            if self.allow_rotations:
+            if self.allow_rotations and not DEBUG_NO_ROTATIONS:
                 cropped = pygame.transform.rotate(cropped, self.rotation)
                 draw_size = [cropped.get_width(), cropped.get_height()]
             point = Point(self.x, self.y)

@@ -25,6 +25,8 @@ class Text(object):
         pass
 
     def draw(self, surface):
+        if DEBUG_NO_FONTS:
+            return
         font = self.style['font']
         size = font.size(self.text)
         point = Point(self.x, self.y)
