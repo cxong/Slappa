@@ -100,9 +100,11 @@ class Sprite(object):
             s = pygame.Surface((self.body.width, self.body.height))
             s.set_alpha(128)
             s.fill((255, 0, 255))
-            surface.blit(s, (
-                self.x + self.body.x - self.body.width / 2,
-                self.y + self.body.y - self.body.height / 2))
+            point = Point(self.x, self.y)
+            point.multiply(self.game.scale.scale)
+            point.add(Point(self.body.x - self.body.width / 2,
+                            self.body.y - self.body.height / 2))
+            surface.blit(s, (int(point.x), int(point.y)))
         if self.image is not None:
             cropped = pygame.Surface(self.crop.size)
             cropped.fill((255, 0, 255, 0))

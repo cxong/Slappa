@@ -50,7 +50,6 @@ class State(object):
     def start(self, screen):
         self.started = True
         self.is_quit = False
-        screen_buf = pygame.Surface([self.game.width, self.game.height])
         if self.preload is not None:
             self.preload()
         if self.create is not None:
@@ -68,13 +67,13 @@ class State(object):
             self.game.world.update(clock.get_time())
             if self.update is not None:
                 self.update(clock.get_time())
-            self.game.world.draw(screen_buf)
+            screen.fill((100, 149, 237))
+            self.game.world.draw(screen)
             if self.draw is not None:
-                self.draw(screen_buf)
-            screen.blit(screen_buf, (0, 0))
+                self.draw(screen)
             pygame.display.flip()
             self.game.time.update(clock.get_time())
-            clock.tick(self.game.config.FRAME_RATE)
+            clock.tick_busy_loop(self.game.config.FRAME_RATE)
         # Remove all stuff from stage
         self.game.world.destroy()
         self.started = False
