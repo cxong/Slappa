@@ -12,7 +12,7 @@ class Sprite(object):
                  crop=pygame.Rect(0, 0, 0, 0)):
         self.game = game
         if key != '':
-            self.image = game.load.images[key]
+            self.image = game.load.images[key].convert_alpha()
         else:
             self.image = None
 
@@ -35,7 +35,8 @@ class Sprite(object):
                 (
                     int(game.load.images[key].get_width() * new_scale.x),
                     int(game.load.images[key].get_height() * new_scale.y)))
-            self.cropped_image = pygame.Surface(self.crop.size).convert_alpha()
+            self.cropped_image = pygame.Surface(self.crop.size).convert()
+            self.cropped_image.set_colorkey((255, 0, 255, 0))
 
         self.animations = AnimationManager()
 
@@ -108,7 +109,7 @@ class Sprite(object):
                             self.body.y - self.body.height / 2))
             surface.blit(s, (int(point.x), int(point.y)))
         if self.image is not None:
-            self.cropped_image.fill((0, 0, 0, 0))
+            self.cropped_image.fill((255, 0, 255))
             if self.alpha < 1.0:
                 self.cropped_image.set_alpha(int(self.alpha * 255))
             crop = self.animations.get_crop(self.crop.size,

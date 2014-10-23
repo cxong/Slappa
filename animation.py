@@ -48,7 +48,7 @@ class Animation(object):
         frame = self.frames[self.counter]
         x = frame * dimensions[0]
         y = 0
-        while x + dimensions[0] >= image_width:
+        while x + dimensions[0] > image_width:
             x -= image_width
             y += dimensions[1]
         return pygame.Rect(x, y, dimensions[0], dimensions[1])

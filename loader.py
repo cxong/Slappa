@@ -18,3 +18,6 @@ class Loader(object):
     def image(self, key, path):
         if key not in self.images:
             self.images[key] = pygame.image.load(path).convert_alpha()
+            if self.images[key].get_at((0, 0))[3] == 255:
+                # Assume top-left non transparent means whole image is not
+                self.images[key] = pygame.image.load(path).convert()

@@ -33,11 +33,19 @@ class Enemy(SimpleCharacter):
         self.body.y = -35
         self.anchor.y = 0.95
 
+        width = 4
         self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3], 20, True)
-        self.animations.animations['walk'] = Animation(game, [8, 9, 10, 11], 20, True)
-        self.animations.animations['hit'] = Animation(game, [17, 18, 19], 7)
-        self.animations.animations['hurt'] = Animation(game, [25, 26], 20)
-        self.animations.animations['die'] = Animation(game, [25, 26, 27, 28, 29, 30], 3)
+        row = 1 * width
+        self.animations.animations['walk'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 20, True)
+        row = 2 * width
+        self.animations.animations['hit'] = Animation(
+            game, [row + x for x in [1, 2, 3]], 7)
+        row = 3 * width
+        self.animations.animations['hurt'] = Animation(
+            game, [row + x for x in [0, 1]], 20)
+        self.animations.animations['die'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 5)
 
         self.health = 2
         self.speed = 0.1
@@ -49,12 +57,22 @@ class Enemy(SimpleCharacter):
         self.body.y = -25
         self.anchor.y = 0.84
 
+        width = 4
         self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3], 20, True)
-        self.animations.animations['walk'] = Animation(game, [8, 9, 10, 11, 12], 20, True)
-        self.animations.animations['jump'] = Animation(game, [43, 44, 45, 46, 45, 46, 45, 46], 14)
-        self.animations.animations['hit'] = Animation(game, [16, 17, 18, 19, 20, 21], 4)
-        self.animations.animations['hurt'] = Animation(game, [25, 26], 20)
-        self.animations.animations['die'] = Animation(game, [25, 26, 27, 28, 29, 30], 3)
+        row = width * 1
+        self.animations.animations['walk'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 20, True)
+        row = width * 4
+        self.animations.animations['jump'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3, 2, 3, 2, 3]], 14)
+        row = width * 2
+        self.animations.animations['hit'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3, 0]], 4)
+        row = width * 3
+        self.animations.animations['hurt'] = Animation(
+            game, [row + x for x in [0, 1]], 20)
+        self.animations.animations['die'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 5)
 
         self.health = 2
         self.speed = 0.1
