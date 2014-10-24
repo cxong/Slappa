@@ -54,6 +54,7 @@ class Sprite(object):
         self.alpha = 1.0
         self.flip_x = False
         self.flip_y = False
+        self.visible = True
 
         self.health = 10
         self.out_of_bounds_kill = True
@@ -92,6 +93,8 @@ class Sprite(object):
         pass
 
     def draw(self, surface):
+        if not self.visible:
+            return
         if self.game.config.DEBUG_DRAW_SPRITE_BOUNDS:
             s = pygame.Surface((self.width, self.height))
             s.set_alpha(128)

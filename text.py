@@ -12,11 +12,15 @@ Style is a dict with the following attributes:
 class Text(object):
     def __init__(self, game, x, y, text, style):
         self.game = game
-        self.text = text
         self.x = x
         self.y = y
-        self.style = style
         self.anchor = Point(0.5, 0.5)
+        font = style['font']
+        self.image = font.render(text,
+                                 self.game.config.FONT_ANTIALIAS,
+                                 style['fill'])
+        self.size = font.size(text)
+        self.visible = True
 
     def exists(self):
         return True
@@ -25,18 +29,15 @@ class Text(object):
         pass
 
     def draw(self, surface):
+        if not self.visible:
+            return
         if self.game.config.DEBUG_NO_FONTS:
             return
-        font = self.style['font']
-        size = font.size(self.text)
         point = Point(self.x, self.y)
         point.multiply(self.game.scale.scale)
-        point.subtract(Point(size[0] * self.anchor.x,
-                             size[1] * self.anchor.y))
-        surface.blit(font.render(self.text,
-                                 self.game.config.FONT_ANTIALIAS,
-                                 self.style['fill']),
-                     (int(point.x), int(point.y)))
+        point.subtract(Point(self.size[0] * self.anchor.x,
+                             self.size[1] * self.anchor.y))
+        surface.blit(self.image, (int(point.x), int(point.y)))
         if self.game.config.DEBUG_DRAW_SPRITE_ANCHOR:
             point = Point(self.x, self.y)
             point.multiply(self.game.scale.scale)

@@ -13,6 +13,9 @@ class Game(object):
         pygame.display.set_caption(caption)
         self.width = width
         self.height = height
+        self.__paused = False
+        self.on_paused = None
+        self.on_resume = None
 
         self.add = GameObjectFactory(self)
         self.config = Config()
@@ -23,6 +26,23 @@ class Game(object):
         self.world = World()
         if GCW_ZERO:
             pygame.mouse.set_visible(False)
+
+    @property
+    def paused(self):
+        return self.__paused
+    @paused.setter
+    def paused(self, value):
+        if value == self.__paused:
+            return
+        self.__paused = value
+        if value:
+            if self.on_paused is not None:
+                self.on_paused()
+            # Do one last draw
+            self.state.active_state.draw_screen(self.state.screen)
+        else:
+            if self.on_resume is not None:
+                self.on_resume()
 
     def __exit__(self, type, value, traceback):
         pygame.mixer.quit()

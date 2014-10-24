@@ -63,17 +63,27 @@ class State(object):
                 elif event.type == pygame.KEYDOWN:
                     if self.game.keys.on_down is not None:
                         self.game.keys.on_down(event.key, event.unicode)
-
-            self.game.world.update(clock.get_time())
-            if self.update is not None:
-                self.update(clock.get_time())
-            screen.fill((100, 149, 237))
-            self.game.world.draw(screen)
-            if self.draw is not None:
-                self.draw(screen)
-            pygame.display.flip()
+            # Don't update or draw if paused
+            if not self.game.paused:
+                self.game.world.update(clock.get_time())
+                if self.update is not None:
+                    self.update(clock.get_time())
+                self.draw_screen(screen)
+                clock.tick_busy_loop(self.game.config.FRAME_RATE)
+            else:
+                # Try less power hungry tick
+                clock.tick(self.game.config.FRAME_RATE)
             self.game.time.update(clock.get_time())
-            clock.tick_busy_loop(self.game.config.FRAME_RATE)
         # Remove all stuff from stage
         self.game.world.destroy()
+        # Clean up callbacks from last state
+        self.game.on_paused = None
+        self.game.on_resume = None
         self.started = False
+
+    def draw_screen(self, screen):
+        screen.fill((100, 149, 237))
+        self.game.world.draw(screen)
+        if self.draw is not None:
+            self.draw(screen)
+        pygame.display.flip()

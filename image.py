@@ -23,6 +23,7 @@ class Image(object):
         self.y = y
         self.anchor = Point(0.5, 0.5)
         self.alpha = 1.0
+        self.visible = True
 
     def __set_scale(self):
         if self.__image:
@@ -64,6 +65,8 @@ class Image(object):
         pass
 
     def draw(self, surface):
+        if not self.visible:
+            return
         if self.image is not None:
             self.image.set_alpha(int(self.alpha * 255))
             point = Point(self.x, self.y)

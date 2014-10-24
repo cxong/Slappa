@@ -175,7 +175,6 @@ class HighScoreHelper(object):
         self.state = state
         self.is_entering = False
         self.last_key = None
-        state.game.keys.on_down = self.enter_key
         self.headings = Group()
         # Headings
         y = 24
@@ -332,11 +331,14 @@ class GameState(State):
         self.players = None
         self.enemy_generator = None
         self.high_score_helper = None
+        self.pause_text = None
+        self.pause_sound = None
 
         def preload():
             # Sounds
             self.game.audio['growls'] = load_sounds_from_folder("growls")
             self.game.audio['deaths'] = load_sounds_from_folder("deaths")
+            self.game.load.audio('pause', 'data/sounds/pause.ogg')
 
             # Images/templates
             self.game.load.image('explosion', "data/images/explosion.png")
@@ -377,6 +379,15 @@ class GameState(State):
                 self.add_player(self.game.width / 2 + offset, 'dog', 1)
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.7)
+            self.pause_text = self.game.add.text(
+                self.game.width / 2, self.game.height / 2,
+                "Paused",
+                {'font': self.game.load.fonts['big'], 'fill': (255, 255, 0)})
+            self.pause_text.visible = False
+            self.game.on_paused = self.on_pause
+            self.game.on_resume = self.on_resume
+            self.game.keys.on_down = self.enter_key
+            self.pause_sound = self.game.add.audio('pause')
         self.create = create
 
         def update(time):
@@ -496,6 +507,21 @@ class GameState(State):
                 text.anchor = Point(1, 0)
                 text.draw(surface)
         self.draw = draw
+
+    def on_pause(self):
+        self.pause_text.visible = True
+        pygame.mixer.music.pause()
+        self.pause_sound.play()
+
+    def on_resume(self):
+        self.pause_text.visible = False
+        pygame.mixer.music.unpause()
+
+    def enter_key(self, key, unicode):
+        if key == pygame.K_p or (GCW_ZERO and key == pygame.K_RETURN):
+            self.game.paused = not self.game.paused
+        else:
+            self.high_score_helper.enter_key(key, unicode)
 
     def add_player(self, x, key, index):
         player = self.players.add(Player(self.game,
