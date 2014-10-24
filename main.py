@@ -293,6 +293,8 @@ class HighScoreHelper(object):
                       'fill': (0, 255, 0)}
         i = 0
         for score in self.top_scores:
+            if i == 10:
+                break
             # Name
             name = score[1][:]
             style = style_others
