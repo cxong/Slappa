@@ -84,13 +84,17 @@ class Enemy(SimpleCharacter):
     def init_flying(self, game, x, y):
         super(Enemy, self).__init__(game, x, y, 'flying', (64, 64))
 
-        #self.anchor.y = 0.84
-
-        self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3, 4], 10, True)
-        self.animations.animations['walk'] = Animation(game, [0, 1, 2, 3, 4], 10, True)
-        self.animations.animations['hit'] = Animation(game, [9, 10, 11, 12], 5)
-        self.animations.animations['hurt'] = Animation(game, [17, 18], 20)
-        self.animations.animations['die'] = Animation(game, [17, 18, 19, 20, 21, 22, 23], 3)
+        width = 4
+        self.animations.animations['idle'] = Animation(game, [0, 1, 2, 3], 12, True)
+        self.animations.animations['walk'] = Animation(game, [0, 1, 2, 3], 10, True)
+        row = width * 1
+        self.animations.animations['hit'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 5)
+        row = width * 2
+        self.animations.animations['hurt'] = Animation(
+            game, [row + x for x in [0, 1]], 20)
+        self.animations.animations['die'] = Animation(
+            game, [row + x for x in [0, 1, 2, 3]], 5)
 
         self.health = 1
         self.speed = 0.2
