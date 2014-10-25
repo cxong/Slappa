@@ -96,7 +96,7 @@ class TitleState(State):
                 kb = self.game.add.image(padding, self.game.height - padding,
                                          'keyboard')
                 kb.anchor = Point(0, 1)
-            if not GCW_ZERO or self.joys.joystick is not None:
+            if not GCW_ZERO or self.game.joys.joystick is not None:
                 joy = self.game.add.image(self.game.width - padding,
                                           self.game.height - padding,
                                           'xbox360')
