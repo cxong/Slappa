@@ -17,6 +17,8 @@ class Enemy(SimpleCharacter):
         # Random behaviour
         self.delay = 60
         self.action = 'idle'
+        # Counter for throwing at a delay
+        self.throw_counter = 0
 
         self.players = players
         self.thing_key = random.choice(thing_keys)
@@ -157,12 +159,22 @@ class Enemy(SimpleCharacter):
                     continue
                 self.action = new_action
                 break
+        if self.throw_counter > 0:
+            self.throw_counter -= time
+            if self.throw_counter <= 0:
+                self.throw()
 
     def do_hit(self, direction):
         players_alive = [p for p in self.players.children if p.health > 0]
         if len(players_alive) == 0:
             return
         super(Enemy, self).do_hit(direction)
+        self.throw_counter = 70
+
+    def throw(self):
+        players_alive = [p for p in self.players.children if p.health > 0]
+        if len(players_alive) == 0:
+            return
         # Throw a thing at a player
         player = random.choice(players_alive)
         player_center = player.get_body_center()
