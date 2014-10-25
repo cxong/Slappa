@@ -42,7 +42,7 @@ class Enemy(SimpleCharacter):
             game, [row + x for x in [0, 1, 2, 3]], 20, True)
         row = 2 * width
         self.animations.animations['hit'] = Animation(
-            game, [row + x for x in [1, 2, 3]], 7)
+            game, [row + x for x in [1, 2, 3]], 10)
         row = 3 * width
         self.animations.animations['hurt'] = Animation(
             game, [row + x for x in [0, 1]], 20)
@@ -69,7 +69,7 @@ class Enemy(SimpleCharacter):
             game, [row + x for x in [0, 1, 2, 3, 2, 3, 2, 3]], 14)
         row = width * 2
         self.animations.animations['hit'] = Animation(
-            game, [row + x for x in [0, 1, 2, 3, 0]], 4)
+            game, [row + x for x in [0, 1, 2, 3, 0]], 7)
         row = width * 3
         self.animations.animations['hurt'] = Animation(
             game, [row + x for x in [0, 1]], 20)
@@ -91,7 +91,7 @@ class Enemy(SimpleCharacter):
         self.animations.animations['walk'] = Animation(game, [0, 1, 2, 3], 10, True)
         row = width * 1
         self.animations.animations['hit'] = Animation(
-            game, [row + x for x in [0, 1, 2, 3]], 5)
+            game, [row + x for x in [0, 1, 2, 3]], 7)
         row = width * 2
         self.animations.animations['hurt'] = Animation(
             game, [row + x for x in [0, 1]], 20)
@@ -104,6 +104,10 @@ class Enemy(SimpleCharacter):
 
     def update(self, time):
         super(Enemy, self).update(time)
+        if self.throw_counter > 0 and self.health > 0:
+            self.throw_counter -= time
+            if self.throw_counter <= 0:
+                self.throw()
         if self.y > self.game.config.FLOOR_Y:
             self.y = self.game.config.FLOOR_Y
         if self.is_hitting:
@@ -159,17 +163,13 @@ class Enemy(SimpleCharacter):
                     continue
                 self.action = new_action
                 break
-        if self.throw_counter > 0:
-            self.throw_counter -= time
-            if self.throw_counter <= 0:
-                self.throw()
 
     def do_hit(self, direction):
         players_alive = [p for p in self.players.children if p.health > 0]
         if len(players_alive) == 0:
             return
         super(Enemy, self).do_hit(direction)
-        self.throw_counter = 70
+        self.throw_counter = 500
 
     def throw(self):
         players_alive = [p for p in self.players.children if p.health > 0]

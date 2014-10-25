@@ -192,7 +192,7 @@ class HighScoreHelper(object):
         text = Text(state.game, date_x, y, 'Date', style)
         text.anchor = Point(0, 0)
         self.headings.add(text)
-        self.cursor_blink = 10
+        self.cursor_blink = 300
 
     def __exit__(self, type, value, traceback):
         self.state.game.keys.on_down = None
@@ -301,8 +301,8 @@ class HighScoreHelper(object):
             if self.is_entering and i == self.score_index and self.cursor_blink > 0:
                 name += '_'
             self.cursor_blink -= 1
-            if self.cursor_blink < -10:
-                self.cursor_blink = 10
+            if self.cursor_blink < -300:
+                self.cursor_blink = 300
             if i == self.score_index:
                 style = style_self
             text = Text(self.state.game, name_x, y, name, style)
