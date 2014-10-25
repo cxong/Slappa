@@ -96,10 +96,11 @@ class TitleState(State):
                 kb = self.game.add.image(padding, self.game.height - padding,
                                          'keyboard')
                 kb.anchor = Point(0, 1)
-            joy = self.game.add.image(self.game.width - padding,
-                                      self.game.height - padding,
-                                      'xbox360')
-            joy.anchor = Point(1, 1)
+            if not GCW_ZERO or self.joys.joystick is not None:
+                joy = self.game.add.image(self.game.width - padding,
+                                          self.game.height - padding,
+                                          'xbox360')
+                joy.anchor = Point(1, 1)
 
             self.gong = self.game.add.sprite(self.game.width / 2,
                                              self.game.config.FLOOR_Y,
