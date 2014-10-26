@@ -8,6 +8,7 @@ if GCW_ZERO:
     GAME_SIZE = (640, 480)
     SCREEN_SIZE = (320, 240)
 
+
 class Config(object):
     FRAME_RATE = 60
     ANIM_FRAME_RATE = 60
