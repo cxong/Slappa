@@ -29,6 +29,7 @@ class StateManager(object):
                 self.screen = pygame.display.set_mode(
                     [self.game.scale.width, self.game.scale.height],
                     pygame.DOUBLEBUF | pygame.HWSURFACE | self.game.config.SDL_FLAGS)
+                pygame.mouse.set_visible(self.game.config.MOUSE_VISIBLE)
             state.start(self.screen)
             # At this stage, we either want to quit or we're changing to a new
             # state

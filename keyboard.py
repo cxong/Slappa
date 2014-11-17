@@ -44,3 +44,6 @@ class Keyboard:
         elif self.keys[self.hit_up]:
             return "up"
         return ""
+
+    def pressed(self):
+        return self.dir() != 0 or self.is_jump() or self.hit() != ""

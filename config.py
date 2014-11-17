@@ -7,6 +7,7 @@ GCW_ZERO = False
 if GCW_ZERO:
     GAME_SIZE = (640, 480)
     SCREEN_SIZE = (320, 240)
+DEMO_MODE = False
 
 
 class Config(object):
@@ -14,10 +15,14 @@ class Config(object):
     ANIM_FRAME_RATE = 60
     FONT_ANTIALIAS = True
     SDL_FLAGS = 0
+    MOUSE_VISIBLE = True
     if GCW_ZERO:
         FRAME_RATE = 30
         FONT_ANTIALIAS = False
         SDL_FLAGS = pygame.FULLSCREEN
+    if DEMO_MODE:
+        SDL_FLAGS = pygame.FULLSCREEN
+        MOUSE_VISIBLE = False
     DEFLECTION_AUTOAIM_ANGLE = 45
     DEFLECTION_SPEED_SCALE = 3
     ENEMY_TARGET_OFFSET = 64

@@ -19,7 +19,12 @@ class SlappaGame(Game):
 
         # Input devices
         self.keys = Keyboard()
-        self.joys = Joystick()
+        self.joys = Joysticks()
+
+        # Player devices
+        self.devices = [self.keys, self.joys[0]]
+        if DEMO_MODE:
+            self.devices = [self.joys[0], self.joys[1]]
 
         # Sounds
         # TODO: lists of sounds
@@ -92,11 +97,15 @@ class TitleState(State):
                                                self.game.height - padding,
                                                'gcw-zero')
                 gcw_zero.anchor = Point(0, 1)
+            elif DEMO_MODE:
+                joy1 = self.game.add.image(padding, self.game.height - padding,
+                                           'xbox360')
+                joy1.anchor = Point(0, 1)
             else:
                 kb = self.game.add.image(padding, self.game.height - padding,
                                          'keyboard')
                 kb.anchor = Point(0, 1)
-            if not GCW_ZERO or self.game.joys.joystick is not None:
+            if self.game.devices[1] is not None:
                 joy = self.game.add.image(self.game.width - padding,
                                           self.game.height - padding,
                                           'xbox360')
@@ -125,31 +134,24 @@ class TitleState(State):
                 self.game.joys.update()
 
             # Detect second player
-            if (len(self.players) == 1 and
-                    self.game.joys.joystick is not None):
+            if len(self.players) == 1 and self.game.devices[1] is not None:
                 offset = self.game.width * 0.06
                 self.add_player(self.game.width / 2 + offset, 'dog')
 
             # Detect input and add player
-            if self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "":
+            if self.game.devices[0].pressed():
                 self.players[0].health = 5
                 self.game.players_joined[0] = True
-            if self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "":
+            if self.game.devices[1] is not None and self.game.devices[1].pressed():
                 self.players[1].health = 5
                 self.game.players_joined[1] = True
 
             for i in range(len(self.players)):
                 player = self.players[i]
-                if i == 0:
-                    player.hit(self.game.keys.hit())
-                    player.move(self.game.keys.dir())
-                    if self.game.keys.is_jump():
-                        player.jump()
-                elif i == 1:
-                    player.hit(self.game.joys.hit())
-                    player.move(self.game.joys.dir())
-                    if self.game.joys.is_jump():
-                        player.jump()
+                player.hit(self.game.devices[i].hit())
+                player.move(self.game.devices[i].dir())
+                if self.game.devices[i].is_jump():
+                    player.jump()
 
             # Hit gong
             def gong_hit(g, h):
@@ -375,7 +377,7 @@ class GameState(State):
             offset = self.game.width * 0.06
             self.add_player(self.game.width / 2 - offset, 'cat', 0)
             # Detect second player
-            if self.game.joys.joystick is not None:
+            if self.game.devices[1] is not None:
                 offset = self.game.width * 0.06
                 self.add_player(self.game.width / 2 + offset, 'dog', 1)
             pygame.mixer.music.play(-1)
@@ -402,11 +404,12 @@ class GameState(State):
             # Detect input and add player
             if not self.high_score_helper.is_entering:
                 if (not self.game.players_joined[0] and
-                        (self.game.keys.dir() != 0 or self.game.keys.is_jump() or self.game.keys.hit() != "")):
+                        (self.game.devices[0].hit())):
                     self.players[0].health = 5
                     self.game.players_joined[0] = True
                 if (not self.game.players_joined[1] and
-                        (self.game.joys.dir() != 0 or self.game.joys.is_jump() or self.game.joys.hit() != "")):
+                        self.game.devices[1] is not None and
+                        self.game.devices[1].hit()):
                     self.players[1].health = 5
                     self.game.players_joined[1] = True
             else:
@@ -415,16 +418,10 @@ class GameState(State):
             #Update
             for i in range(len(self.players)):
                 player = self.players[i]
-                if i == 0:
-                    player.hit(self.game.keys.hit())
-                    player.move(self.game.keys.dir())
-                    if self.game.keys.is_jump():
-                        player.jump()
-                elif i == 1:
-                    player.hit(self.game.joys.hit())
-                    player.move(self.game.joys.dir())
-                    if self.game.joys.is_jump():
-                        player.jump()
+                player.hit(self.game.devices[i].hit())
+                player.move(self.game.devices[i].dir())
+                if self.game.devices[i].is_jump():
+                    player.jump()
 
             # remove dead enemies
             self.enemy_generator.update(time)
